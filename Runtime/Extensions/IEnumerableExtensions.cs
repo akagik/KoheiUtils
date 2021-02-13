@@ -1,10 +1,13 @@
-﻿using System.Collections.Generic;
-
-public static class IEnumerableExtensions
+﻿namespace KoheiUtils
 {
-    public static void ForEach<T>(this IEnumerable<T> source, System.Action<T> action)
+    using System.Collections.Generic;
+
+    public static class IEnumerableExtensions
     {
-        foreach (T obj in source)
-            action(obj);
+        public static void ForEach<T>(this IEnumerable<T> source, System.Action<T> action)
+        {
+            foreach (T obj in source)
+                action(obj);
+        }
     }
 }

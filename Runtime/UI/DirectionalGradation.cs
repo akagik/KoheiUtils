@@ -1,49 +1,52 @@
-﻿using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
-using UnityEngine.UI;
-
-public class DirectionalGradation : BaseMeshEffect
+﻿namespace KoheiUtils
 {
-    [SerializeField]
-    Color32 color = Color.white;
+    using System.Collections;
+    using System.Collections.Generic;
+    using UnityEngine;
+    using UnityEngine.UI;
 
-    [SerializeField]
-    [Range(0f, 360f)]
-    float angle = 0f;
-
-    public override void ModifyMesh(VertexHelper vh)
+    public class DirectionalGradation : BaseMeshEffect
     {
-        var list = new List<UIVertex>();
-        vh.GetUIVertexStream(list);
+        [SerializeField]
+        Color32 color = Color.white;
 
-        float max = float.MinValue;
-        float min = float.MaxValue;
+        [SerializeField]
+        [Range(0f, 360f)]
+        float angle = 0f;
 
-        var vector = new Vector2(Mathf.Cos(Mathf.Deg2Rad * angle), Mathf.Sin(Mathf.Deg2Rad * angle));
-        foreach (var it in list)
+        public override void ModifyMesh(VertexHelper vh)
         {
-            var dot = it.position.x * vector.x + it.position.y * vector.y;
-            max = Mathf.Max(dot, max);
-            min = Mathf.Min(dot, min);
+            var list = new List<UIVertex>();
+            vh.GetUIVertexStream(list);
+
+            float max = float.MinValue;
+            float min = float.MaxValue;
+
+            var vector = new Vector2(Mathf.Cos(Mathf.Deg2Rad * angle), Mathf.Sin(Mathf.Deg2Rad * angle));
+            foreach (var it in list)
+            {
+                var dot = it.position.x * vector.x + it.position.y * vector.y;
+                max = Mathf.Max(dot, max);
+                min = Mathf.Min(dot, min);
+            }
+
+            if (max == min)
+            {
+                return;
+            }
+
+            for (int i = 0, count = list.Count; i < count; ++i)
+            {
+                var vertex = list[i];
+
+                var dot = vertex.position.x * vector.x + vertex.position.y * vector.y;
+                var t   = Mathf.InverseLerp(min, max, dot);
+                vertex.color = Color32.Lerp(vertex.color, color, t);
+                list[i]      = vertex;
+            }
+
+            vh.Clear();
+            vh.AddUIVertexTriangleStream(list);
         }
-
-        if (max == min)
-        {
-            return;
-        }
-
-        for (int i = 0, count = list.Count; i < count; ++i)
-        {
-            var vertex = list[i];
-
-            var dot = vertex.position.x * vector.x + vertex.position.y * vector.y;
-            var t = Mathf.InverseLerp(min, max, dot);
-            vertex.color = Color32.Lerp(vertex.color, color, t);
-            list[i] = vertex;
-        }
-
-        vh.Clear();
-        vh.AddUIVertexTriangleStream(list);
     }
 }

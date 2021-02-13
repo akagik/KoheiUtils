@@ -1,23 +1,14 @@
-﻿using UnityEngine;
-#if UNITY_EDITOR
-using UnityEditor;
-
-#endif
-
-/// <summary>
-/// 連番アニメーションを管理するクラス.
-/// 連番アニメーションは単純に Sprite の配列と等価.
-/// </summary>
-public class FlipAnimInfo : ScriptableObject
+﻿namespace KoheiUtils
 {
-    public Sprite[] sprites;
+    using UnityEngine;
 
-#if UNITY_EDITOR
-    [MenuItem("Assets/Create/Generic/FlipAnimInfo")]
-    public static void CreateInstance()
+    /// <summary>
+    /// 連番アニメーションを管理するクラス.
+    /// 連番アニメーションは単純に Sprite の配列と等価.
+    /// </summary>
+    [CreateAssetMenu(menuName = "KoheiUtils/FlipAnimInfo")]
+    public class FlipAnimInfo : ScriptableObject
     {
-        FlipAnimInfo obj = ScriptableObject.CreateInstance<FlipAnimInfo>();
-        Generic.ScriptableObjectCreator.Create<FlipAnimInfo>(obj, name: "NewFlipAnimInfo");
+        public Sprite[] sprites;
     }
-#endif
 }

@@ -1,9 +1,7 @@
-﻿using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
-
-namespace KoheiUtils
+﻿namespace KoheiUtils
 {
+    using UnityEngine;
+
     public static class AndroidUtils
     {
         public static string GetInternalStoragePath()

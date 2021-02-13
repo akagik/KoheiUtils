@@ -1,24 +1,27 @@
-﻿using UnityEngine;
-using UnityEngine.UI;
-
-public static class ImageExtensions
+﻿namespace KoheiUtils
 {
-    /// <summary>
-    /// この Text の alpha を変更する
-    /// </summary>
-    public static void SetAlpha(this Image image, float newAlpha)
-    {
-        Color c = image.color;
-        c.a = newAlpha;
-        image.color = c;
-    }
+    using UnityEngine;
+    using UnityEngine.UI;
 
-    public static void SetColorExcludingAlpha(this Image image, Color color)
+    public static class ImageExtensions
     {
-        Color c = image.color;
-        c.r = color.r;
-        c.g = color.g;
-        c.b = color.b;
-        image.color = c;
+        /// <summary>
+        /// この Text の alpha を変更する
+        /// </summary>
+        public static void SetAlpha(this Image image, float newAlpha)
+        {
+            Color c = image.color;
+            c.a         = newAlpha;
+            image.color = c;
+        }
+
+        public static void SetColorExcludingAlpha(this Image image, Color color)
+        {
+            Color c = image.color;
+            c.r         = color.r;
+            c.g         = color.g;
+            c.b         = color.b;
+            image.color = c;
+        }
     }
 }

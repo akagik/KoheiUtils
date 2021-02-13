@@ -1,75 +1,78 @@
-﻿using System;
-
-/// <summary>
-/// Lock インスタンスは生成された時点で一意なIDを持つ.
-/// </summary>
-[Serializable]
-public class Lock : IEquatable<Lock>
+﻿namespace KoheiUtils
 {
-    private static int currentId = 0;
+    using System;
 
-    private int _id;
-
-    public int id => _id;
-
-    public static Lock Create()
+    /// <summary>
+    /// Lock インスタンスは生成された時点で一意なIDを持つ.
+    /// </summary>
+    [Serializable]
+    public class Lock : IEquatable<Lock>
     {
-        return new Lock();
-    }
+        private static int currentId = 0;
 
-    private Lock()
-    {
-        currentId++;
+        private int _id;
 
-        if (currentId >= int.MaxValue)
+        public int id => _id;
+
+        public static Lock Create()
         {
-            currentId = 0;
+            return new Lock();
         }
 
-        _id = currentId;
-    }
+        private Lock()
+        {
+            currentId++;
 
-    public bool Equals(Lock other)
-    {
-        if (other == null)
-            return false;
+            if (currentId >= int.MaxValue)
+            {
+                currentId = 0;
+            }
 
-        if (this.id == other.id)
-            return true;
-        else
-            return false;
-    }
+            _id = currentId;
+        }
 
-    public override bool Equals(System.Object obj)
-    {
-        if (obj == null)
-            return false;
-        Lock lck = obj as Lock;
+        public bool Equals(Lock other)
+        {
+            if (other == null)
+                return false;
 
-        if (lck == null)
-            return false;
-        else
-            return Equals(lck);
-    }
+            if (this.id == other.id)
+                return true;
+            else
+                return false;
+        }
 
-    public override int GetHashCode()
-    {
-        return this.id.GetHashCode();
-    }
+        public override bool Equals(System.Object obj)
+        {
+            if (obj == null)
+                return false;
+            Lock lck = obj as Lock;
 
-    public static bool operator ==(Lock lck1, Lock lck2)
-    {
-        if (((object) lck1) == null || ((object) lck2) == null)
-            return System.Object.Equals(lck1, lck2);
+            if (lck == null)
+                return false;
+            else
+                return Equals(lck);
+        }
 
-        return lck1.Equals(lck2);
-    }
+        public override int GetHashCode()
+        {
+            return this.id.GetHashCode();
+        }
 
-    public static bool operator !=(Lock lck1, Lock lck2)
-    {
-        if (((object) lck1) == null || ((object) lck2) == null)
-            return !System.Object.Equals(lck1, lck2);
+        public static bool operator ==(Lock lck1, Lock lck2)
+        {
+            if (((object) lck1) == null || ((object) lck2) == null)
+                return System.Object.Equals(lck1, lck2);
 
-        return !(lck1.Equals(lck2));
+            return lck1.Equals(lck2);
+        }
+
+        public static bool operator !=(Lock lck1, Lock lck2)
+        {
+            if (((object) lck1) == null || ((object) lck2) == null)
+                return !System.Object.Equals(lck1, lck2);
+
+            return !(lck1.Equals(lck2));
+        }
     }
 }

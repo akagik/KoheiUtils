@@ -1,60 +1,64 @@
-﻿using System;
-using UnityEngine;
-
-public abstract class SingletonMonoBehaviour<T> : MonoBehaviour where T : MonoBehaviour
+﻿namespace KoheiUtils
 {
-    private static T instance;
+    using System;
+    using UnityEngine;
 
-    public static bool Exists
+    public abstract class SingletonMonoBehaviour<T> : MonoBehaviour where T : MonoBehaviour
     {
-        get
-        {
-            if (instance == null)
-            {
-                Type t = typeof(T);
+        private static T instance;
 
-                instance = (T) FindObjectOfType(t);
+        public static bool Exists
+        {
+            get
+            {
                 if (instance == null)
                 {
-                    return false;
+                    Type t = typeof(T);
+
+                    instance = (T) FindObjectOfType(t);
+                    if (instance == null)
+                    {
+                        return false;
+                    }
                 }
+
+                return true;
             }
-            return true;
         }
-    }
 
-    public static T Instance
-    {
-        get
+        public static T Instance
         {
-            if (instance == null)
+            get
             {
-                Type t = typeof(T);
-
-                instance = (T) FindObjectOfType(t);
                 if (instance == null)
                 {
-                    Debug.LogErrorFormat("{0} をアタッチしているGameObjectはありません", t);
+                    Type t = typeof(T);
+
+                    instance = (T) FindObjectOfType(t);
+                    if (instance == null)
+                    {
+                        Debug.LogErrorFormat("{0} をアタッチしているGameObjectはありません", t);
+                    }
                 }
+
+                return instance;
+            }
+        }
+
+        virtual protected void Awake()
+        {
+            if (this != Instance)
+            {
+                Destroy(gameObject);
+
+                Debug.LogWarningFormat("{0} は既に他のGameObjectにアタッチされているため、コンポーネントを破棄しました. アタッチされているGameObjectは {1} です.",
+                    typeof(T), Instance.gameObject.name);
+
+                return;
             }
 
-            return instance;
+            // シーンを跨いでこのオブジェクトが消されないようにする
+            DontDestroyOnLoad(this.gameObject);
         }
-    }
-
-    virtual protected void Awake()
-    {
-        if (this != Instance)
-        {
-            Destroy(gameObject);
-
-            Debug.LogWarningFormat("{0} は既に他のGameObjectにアタッチされているため、コンポーネントを破棄しました. アタッチされているGameObjectは {1} です.",
-                typeof(T), Instance.gameObject.name);
-
-            return;
-        }
-
-        // シーンを跨いでこのオブジェクトが消されないようにする
-        DontDestroyOnLoad(this.gameObject);
     }
 }

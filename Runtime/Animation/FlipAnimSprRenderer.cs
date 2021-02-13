@@ -1,15 +1,19 @@
-﻿using UnityEngine;
-using UnityEngine.UI;
-
-public class FlipAnimSprRenderer : FlipAnimation
+﻿namespace KoheiUtils
 {
-    [SerializeField]
-    SpriteRenderer sprRenderer;
+    using UnityEngine;
+    using UnityEngine.UI;
 
-    public override void SetSprite(Sprite sprite)
+
+    public class FlipAnimSprRenderer : FlipAnimation
     {
-        sprRenderer.sprite = sprite;
-    }
+        [SerializeField]
+        SpriteRenderer sprRenderer;
 
-    public SpriteRenderer spriteRenderer => sprRenderer;
+        public override void SetSprite(Sprite sprite)
+        {
+            sprRenderer.sprite = sprite;
+        }
+
+        public SpriteRenderer spriteRenderer => sprRenderer;
+    }
 }

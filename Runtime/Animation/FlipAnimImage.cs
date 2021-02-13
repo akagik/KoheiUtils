@@ -1,15 +1,18 @@
-﻿using UnityEngine;
-using UnityEngine.UI;
-
-public class FlipAnimImage : FlipAnimation
+﻿namespace KoheiUtils
 {
-    [SerializeField]
-    Image image;
+    using UnityEngine;
+    using UnityEngine.UI;
 
-    public Image targetImage => image;
-
-    public override void SetSprite(Sprite sprite)
+    public class FlipAnimImage : FlipAnimation
     {
-        image.sprite = sprite;
+        [SerializeField]
+        Image image;
+
+        public Image targetImage => image;
+
+        public override void SetSprite(Sprite sprite)
+        {
+            image.sprite = sprite;
+        }
     }
 }

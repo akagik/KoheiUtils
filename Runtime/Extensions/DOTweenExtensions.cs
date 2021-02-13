@@ -1,3 +1,5 @@
+namespace KoheiUtils
+{
 #if DOTWEEN
 using System;
 using UnityEngine.UI;
@@ -67,3 +69,4 @@ public static class DOTweenExtensions
 	}
 }
 #endif
+}

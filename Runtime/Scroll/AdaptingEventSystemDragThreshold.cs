@@ -1,28 +1,31 @@
-﻿using UnityEngine;
-using UnityEngine.EventSystems;
-using System.Collections;
-
-public class AdaptingEventSystemDragThreshold : MonoBehaviour
+﻿namespace KoheiUtils
 {
-    [SerializeField]
-    private EventSystem eventSystem;
+    using UnityEngine;
+    using UnityEngine.EventSystems;
+    using System.Collections;
 
-    [SerializeField]
-    private float inchDistance = 0.08f;
-
-    void Awake()
+    public class AdaptingEventSystemDragThreshold : MonoBehaviour
     {
-        UpdatePixelDrag();
-    }
+        [SerializeField]
+        private EventSystem eventSystem;
 
-    public void UpdatePixelDrag()
-    {
-        if (eventSystem == null)
+        [SerializeField]
+        private float inchDistance = 0.08f;
+
+        void Awake()
         {
-            Debug.LogWarning("Trying to set pixel drag for adapting to screen dpi, " +
-                             "but there is no event system assigned to the script", this);
+            UpdatePixelDrag();
         }
 
-        eventSystem.pixelDragThreshold = Mathf.RoundToInt(ScreenUtils.dpi * inchDistance);
+        public void UpdatePixelDrag()
+        {
+            if (eventSystem == null)
+            {
+                Debug.LogWarning("Trying to set pixel drag for adapting to screen dpi, " +
+                                 "but there is no event system assigned to the script", this);
+            }
+
+            eventSystem.pixelDragThreshold = Mathf.RoundToInt(ScreenUtils.dpi * inchDistance);
+        }
     }
 }

@@ -1,17 +1,20 @@
-﻿using UnityEngine;
-
-public static class ScreenUtils
+﻿namespace KoheiUtils
 {
-    public static float dpi
+    using UnityEngine;
+
+    public static class ScreenUtils
     {
-        get
+        public static float dpi
         {
+            get
+            {
 #if UNITY_EDITOR
-            // Unity Editor の場合は端末の大きさを仮定して DPI を計算する
-            return 1080 / 2.64f;
+                // Unity Editor の場合は端末の大きさを仮定して DPI を計算する
+                return 1080 / 2.64f;
 #else
             return Screen.dpi;
 #endif
+            }
         }
     }
 }

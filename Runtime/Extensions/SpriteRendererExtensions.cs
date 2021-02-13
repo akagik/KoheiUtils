@@ -1,15 +1,18 @@
-﻿using UnityEngine;
-using UnityEngine.UI;
-
-public static class SpriteRendererExtensions
+﻿namespace KoheiUtils
 {
-    /// <summary>
-    /// この SpriteRenderer の alpha を変更する
-    /// </summary>
-    public static void SetAlpha(this SpriteRenderer sr, float newAlpha)
+    using UnityEngine;
+    using UnityEngine.UI;
+
+    public static class SpriteRendererExtensions
     {
-        Color c = sr.color;
-        c.a = newAlpha;
-        sr.color = c;
+        /// <summary>
+        /// この SpriteRenderer の alpha を変更する
+        /// </summary>
+        public static void SetAlpha(this SpriteRenderer sr, float newAlpha)
+        {
+            Color c = sr.color;
+            c.a      = newAlpha;
+            sr.color = c;
+        }
     }
 }

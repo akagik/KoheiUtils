@@ -1,15 +1,18 @@
-﻿using UnityEngine;
-using UnityEngine.UI;
-
-public static class TextExtensions
+﻿namespace KoheiUtils
 {
-    /// <summary>
-    /// この Text の alpha を変更する
-    /// </summary>
-    public static void SetAlpha(this Text text, float newAlpha)
+    using UnityEngine;
+    using UnityEngine.UI;
+
+    public static class TextExtensions
     {
-        Color c = text.color;
-        c.a = newAlpha;
-        text.color = c;
+        /// <summary>
+        /// この Text の alpha を変更する
+        /// </summary>
+        public static void SetAlpha(this Text text, float newAlpha)
+        {
+            Color c = text.color;
+            c.a        = newAlpha;
+            text.color = c;
+        }
     }
 }

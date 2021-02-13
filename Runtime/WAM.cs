@@ -1,82 +1,85 @@
-﻿using System;
-using System.Linq;
-using Random = UnityEngine.Random;
-
-public class WAM
+﻿namespace KoheiUtils
 {
-    public float[] weights;
-    public float wsm;
-    public float[] p;
-    public int[] a;
+    using System;
+    using System.Linq;
+    using Random = UnityEngine.Random;
 
-    public WAM(float[] weightArray)
+    public class WAM
     {
-        weights = new float[weightArray.Length];
-        Array.Copy(weightArray, 0, weights, 0, weightArray.Length);
+        public float[] weights;
+        public float   wsm;
+        public float[] p;
+        public int[]   a;
 
-        p = new float[weights.Length];
-        a = new int[weights.Length];
-
-        Setup();
-    }
-
-    private void Setup()
-    {
-        int[] hl = new int[weights.Length];
-        int l = 0;
-        int h = weights.Length - 1;
-
-        a = new int[weights.Length];
-
-        wsm = weights.Sum();
-        Array.Clear(a, 0, weights.Length);
-        Array.Clear(hl, 0, weights.Length);
-
-        for (int i = 0; i < p.Length; i++)
+        public WAM(float[] weightArray)
         {
-            p[i] = weights[i] * p.Length / wsm;
+            weights = new float[weightArray.Length];
+            Array.Copy(weightArray, 0, weights, 0, weightArray.Length);
+
+            p = new float[weights.Length];
+            a = new int[weights.Length];
+
+            Setup();
         }
 
-        for (int i = 0; i < p.Length; i++)
+        private void Setup()
         {
-            if (p[i] < 1)
+            int[] hl = new int[weights.Length];
+            int   l  = 0;
+            int   h  = weights.Length - 1;
+
+            a = new int[weights.Length];
+
+            wsm = weights.Sum();
+            Array.Clear(a, 0, weights.Length);
+            Array.Clear(hl, 0, weights.Length);
+
+            for (int i = 0; i < p.Length; i++)
             {
-                hl[l] = i;
-                l += 1;
+                p[i] = weights[i] * p.Length / wsm;
             }
-            else
+
+            for (int i = 0; i < p.Length; i++)
             {
-                hl[h] = i;
-                h -= 1;
+                if (p[i] < 1)
+                {
+                    hl[l] =  i;
+                    l     += 1;
+                }
+                else
+                {
+                    hl[h] =  i;
+                    h     -= 1;
+                }
+            }
+
+            while (l > 0 && h < p.Length - 1)
+            {
+                int j = hl[l - 1];
+                int k = hl[h + 1];
+
+                a[j] =  k;
+                p[k] += p[j] - 1;
+
+                if (p[k] < 1)
+                {
+                    hl[l - 1] =  k;
+                    h         += 1;
+                }
+                else
+                {
+                    l -= 1;
+                }
             }
         }
 
-        while (l > 0 && h < p.Length - 1)
+        public int SelectOne()
         {
-            int j = hl[l - 1];
-            int k = hl[h + 1];
+            float r = Random.Range(0f, 1f) * p.Length;
+            int   i = (int) Math.Floor(r);
+            r -= i;
 
-            a[j] = k;
-            p[k] += p[j] - 1;
-
-            if (p[k] < 1)
-            {
-                hl[l - 1] = k;
-                h += 1;
-            }
-            else
-            {
-                l -= 1;
-            }
+            return r < p[i] ? i : a[i];
         }
-    }
-
-    public int SelectOne()
-    {
-        float r = Random.Range(0f, 1f) * p.Length;
-        int i = (int) Math.Floor(r);
-        r -= i;
-
-        return r < p[i] ? i : a[i];
     }
 }

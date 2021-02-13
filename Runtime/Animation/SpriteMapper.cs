@@ -1,13 +1,16 @@
-﻿using UnityEngine;
-using System.Collections.Generic;
-
-public class SpriteMapper : MonoBehaviour
+﻿namespace KoheiUtils
 {
-    [SerializeField] SpriteRenderer sr;
-    [SerializeField] SpriteMap map;
+    using UnityEngine;
+    using System.Collections.Generic;
 
-    public void LateUpdate()
+    public class SpriteMapper : MonoBehaviour
     {
-        sr.sprite = map.GetSprite(sr.sprite);
+        [SerializeField] SpriteRenderer sr;
+        [SerializeField] SpriteMap      map;
+
+        public void LateUpdate()
+        {
+            sr.sprite = map.GetSprite(sr.sprite);
+        }
     }
 }

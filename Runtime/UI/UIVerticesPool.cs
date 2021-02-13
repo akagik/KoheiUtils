@@ -1,25 +1,28 @@
-﻿using UnityEngine;
-using System.Collections.Generic;
-
-public static class UIVerticesPool
+﻿namespace KoheiUtils
 {
-    static System.WeakReference verticesBuffer;
+    using UnityEngine;
+    using System.Collections.Generic;
 
-    public static List<UIVertex> Get()
+    public static class UIVerticesPool
     {
-        List<UIVertex> result = null;
+        static System.WeakReference verticesBuffer;
 
-        if (verticesBuffer != null)
+        public static List<UIVertex> Get()
         {
-            result = verticesBuffer.Target as List<UIVertex>;
-        }
+            List<UIVertex> result = null;
 
-        if (result == null)
-        {
-            result = new List<UIVertex>();
-            verticesBuffer = new System.WeakReference(result);
-        }
+            if (verticesBuffer != null)
+            {
+                result = verticesBuffer.Target as List<UIVertex>;
+            }
 
-        return result;
+            if (result == null)
+            {
+                result         = new List<UIVertex>();
+                verticesBuffer = new System.WeakReference(result);
+            }
+
+            return result;
+        }
     }
 }

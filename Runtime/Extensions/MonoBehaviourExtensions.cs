@@ -1,17 +1,20 @@
-using System;
-using UnityEngine;
-using System.Collections;
-
-public static class MonoBehaviourExtensions
+namespace KoheiUtils
 {
-    public static void Invoke(this MonoBehaviour me, Action theDelegate, float time)
-    {
-        me.StartCoroutine(ExecuteAfterTime(theDelegate, time));
-    }
+    using System;
+    using UnityEngine;
+    using System.Collections;
 
-    private static IEnumerator ExecuteAfterTime(Action theDelegate, float delay)
+    public static class MonoBehaviourExtensions
     {
-        yield return new WaitForSeconds(delay);
-        theDelegate();
+        public static void Invoke(this MonoBehaviour me, Action theDelegate, float time)
+        {
+            me.StartCoroutine(ExecuteAfterTime(theDelegate, time));
+        }
+
+        private static IEnumerator ExecuteAfterTime(Action theDelegate, float delay)
+        {
+            yield return new WaitForSeconds(delay);
+            theDelegate();
+        }
     }
 }

@@ -1,4 +1,4 @@
-﻿namespace Generic
+﻿namespace KoheiUtils
 {
     using System;
     using UnityEngine;

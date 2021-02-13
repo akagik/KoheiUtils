@@ -1,35 +1,38 @@
-﻿using System;
-using System.Collections.Generic;
-using Random = UnityEngine.Random;
-
-
-public static class HashSetExtensions
+﻿namespace KoheiUtils
 {
-    public static T First<T>(this HashSet<T> set)
+    using System;
+    using System.Collections.Generic;
+    using Random = UnityEngine.Random;
+
+
+    public static class HashSetExtensions
     {
-        foreach (T t in set)
+        public static T First<T>(this HashSet<T> set)
         {
-            return t;
-        }
-
-        throw new Exception("set must have at least one element.");
-    }
-
-    public static T Choice<T>(this HashSet<T> set)
-    {
-        int i = 0;
-        int target = Random.Range(0, set.Count);
-
-        foreach (T t in set)
-        {
-            if (i == target)
+            foreach (T t in set)
             {
                 return t;
             }
 
-            i++;
+            throw new Exception("set must have at least one element.");
         }
 
-        throw new Exception("Index is out of bound.");
+        public static T Choice<T>(this HashSet<T> set)
+        {
+            int i      = 0;
+            int target = Random.Range(0, set.Count);
+
+            foreach (T t in set)
+            {
+                if (i == target)
+                {
+                    return t;
+                }
+
+                i++;
+            }
+
+            throw new Exception("Index is out of bound.");
+        }
     }
 }
