@@ -1,4 +1,4 @@
-namespace GSPlugin
+namespace KoheiUtils
 {
     using System;
     using System.IO;

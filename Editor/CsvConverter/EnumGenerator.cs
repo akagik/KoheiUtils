@@ -2,7 +2,7 @@
 using UnityEditor;
 using System.IO;
 
-namespace CsvConverter
+namespace KoheiUtils
 {
     public class EnumGenerator
     {

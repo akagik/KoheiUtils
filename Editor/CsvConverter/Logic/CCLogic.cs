@@ -1,4 +1,4 @@
-﻿namespace CsvConverter
+﻿namespace KoheiUtils
 {
     using System;
     using System.Collections.Generic;

@@ -1,4 +1,4 @@
-namespace CsvConverter
+namespace KoheiUtils
 {
     using System;
     using System.IO;
@@ -6,8 +6,7 @@ namespace CsvConverter
     using System.Collections.Generic;
     using UnityEngine;
     using UnityEditor;
-    using KoheiUtils;
-    using ResultType = CsvConverter.AssetsGenerator.ResultType;
+    using ResultType = AssetsGenerator.ResultType;
 
     public class CsvConvert
     {

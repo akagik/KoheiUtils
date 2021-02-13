@@ -1,6 +1,6 @@
 using System;
 
-namespace GSPlugin {
+namespace KoheiUtils {
     /// <summary>
     /// Google Spreadsheet URL からのレスポンスの json を
     /// このオブジェクトに変換する.

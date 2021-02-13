@@ -1,4 +1,4 @@
-﻿namespace CsvConverter
+﻿namespace KoheiUtils
 {
     using System;
     using System.Collections.Generic;
@@ -6,7 +6,6 @@
     using UnityEditor;
     using System.IO;
     using System.Linq;
-    using KoheiUtils;
     using Object = UnityEngine.Object;
 
     public class CsvConverterWindow : EditorWindow
@@ -135,7 +134,7 @@
                     {
                         if (GUILayout.Button("DownLoad", GUILayout.Width(110)))
                         {
-                            GSPlugin.GSPluginSettings.Sheet sheet = new GSPlugin.GSPluginSettings.Sheet();
+                            GSPluginSettings.Sheet sheet = new GSPluginSettings.Sheet();
                             sheet.sheetId = s.sheetID;
                             sheet.gid     = s.gid;
 
@@ -153,7 +152,7 @@
 
                             sheet.isCsv = true;
 
-                            GSPlugin.GSEditorWindow.DownloadOne(sheet, settingPath);
+                            GSEditorWindow.DownloadOne(sheet, settingPath);
                         }
                     }
 
@@ -187,7 +186,7 @@
                     {
                         if (GUILayout.Button("Open", GUILayout.Width(80)) && !isDownloading)
                         {
-                            GSPlugin.GSUtils.OpenURL(s.sheetID, s.gid);
+                            GSUtils.OpenURL(s.sheetID, s.gid);
                             GUIUtility.ExitGUI();
                         }
                     }

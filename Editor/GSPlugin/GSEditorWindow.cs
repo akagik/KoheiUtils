@@ -3,7 +3,7 @@ using UnityEngine;
 using UnityEditor;
 using System.IO;
 
-namespace GSPlugin {
+namespace KoheiUtils {
     public class GSEditorWindow : EditorWindow {
         public static string SETTINGS_KEY = "GSPlugin/settings";
 

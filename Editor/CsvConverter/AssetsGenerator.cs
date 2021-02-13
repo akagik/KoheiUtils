@@ -8,7 +8,7 @@ using System.Linq;
 using System.Reflection;
 using Object = UnityEngine.Object;
 
-namespace CsvConverter
+namespace KoheiUtils
 {
     public class AssetsGenerator
     {

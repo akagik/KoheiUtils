@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using NUnit.Framework;
 
-namespace CsvConverter
+namespace KoheiUtils
 {
     public class Test_CsvConverter
     {

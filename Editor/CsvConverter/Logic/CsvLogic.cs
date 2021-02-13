@@ -1,9 +1,6 @@
 ﻿using System;
-using KoheiUtils;
-using Unity.Collections.LowLevel.Unsafe;
-using UnityEngine;
 
-namespace CsvConverter
+namespace KoheiUtils
 {
     public static class CsvLogic
     {

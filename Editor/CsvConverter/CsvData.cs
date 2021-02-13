@@ -2,10 +2,10 @@ using System;
 using UnityEngine;
 using System.Collections.Generic;
 
-namespace CsvConverter
+namespace KoheiUtils
 {
     [Serializable]
-    public class CsvData
+    public class CsvData : ScriptableObject
     {
         public Row[] content;
 

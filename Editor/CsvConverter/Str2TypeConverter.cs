@@ -1,4 +1,4 @@
-﻿namespace CsvConverter
+﻿namespace KoheiUtils
 {
     using UnityEngine;
     using UnityEditor;

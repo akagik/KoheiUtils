@@ -1,11 +1,11 @@
 using UnityEngine;
 
-namespace CsvConverter
+namespace KoheiUtils
 {
     /// <summary>
     /// CsvConverter のグローバルな設定.
     /// </summary>
-    [CreateAssetMenuAttribute(menuName = "CsvConverter/GlobalSettings")]
+    [CreateAssetMenu(menuName = "CsvConverter/GlobalSettings")]
     public class GlobalCCSettings : ScriptableObject
     {
         /// <summary>

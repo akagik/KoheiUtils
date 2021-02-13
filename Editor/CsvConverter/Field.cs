@@ -4,7 +4,7 @@ using System.Collections.Generic;
 using System.Reflection;
 using UnityEngine;
 
-namespace CsvConverter
+namespace KoheiUtils
 {
     [SerializeField]
     public class Field

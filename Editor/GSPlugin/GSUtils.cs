@@ -1,6 +1,6 @@
 ﻿using UnityEngine;
 
-namespace GSPlugin
+namespace KoheiUtils
 {
     public static class GSUtils
     {

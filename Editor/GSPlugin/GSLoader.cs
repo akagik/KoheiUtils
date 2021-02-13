@@ -3,7 +3,7 @@ using System;
 using System.Collections.Generic;
 using UnityEngine.Networking;
 
-namespace GSPlugin {
+namespace KoheiUtils {
     // スプレッドシートをウェブから引っ張ってきて CsvData に変換する.
     // エントリポイントは LoadGS.
     public class GSLoader {
