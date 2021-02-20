@@ -1,0 +1,10 @@
+__pycache__/
+__pycache__.meta
+*.py[cod]
+*.py[cod].meta
+.idea
+
+/Scripts/LocalizationKey.cs*
+
+/Editor/temp/*
+!/Editor/temp/.gitkeep
