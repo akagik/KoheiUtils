@@ -1,19 +1,21 @@
-﻿namespace KoheiUtils
+﻿
+namespace KoheiUtils
 {
     using UnityEngine;
-    using UnityEngine.UI;
-
+    using System.Runtime.CompilerServices;
 
     public class FlipAnimSprRenderer : FlipAnimation
     {
         [SerializeField]
-        SpriteRenderer sprRenderer;
-
+#if ODIN_INSPECTOR
+        [Sirenix.OdinInspector.PropertySpace(0, 10f)]
+#endif
+        private SpriteRenderer sprRenderer;
+        
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public override void SetSprite(Sprite sprite)
         {
             sprRenderer.sprite = sprite;
         }
-
-        public SpriteRenderer spriteRenderer => sprRenderer;
     }
 }

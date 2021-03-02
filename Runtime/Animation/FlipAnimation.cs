@@ -2,10 +2,7 @@
 {
     using System;
     using UnityEngine;
-#if ODIN_INSPECTOR
-    using Sirenix.OdinInspector;
-
-#endif
+    using System.Runtime.CompilerServices;
 
     /// <summary>
     /// 連番アニメーションを再生する.
@@ -22,17 +19,30 @@
         // 事前に設定されるべき情報.
         [Header("Animation")]
         [SerializeField] float secPerSpr;
-        [SerializeField] int                         loopCount = -1;
-        [SerializeField] Sprite[]                    sprites;
+
+        [SerializeField] int      loopCount = -1;
+        [SerializeField] Sprite[] sprites;
+#if ODIN_INSPECTOR
+        [Sirenix.OdinInspector.PropertySpace(0, 10f)]
+#endif
         [SerializeField] FlipAnimationEventTrigger[] triggers;
 
         // アニメーション中に利用される変数
-        [Header("Read only variables")]
+#if ODIN_INSPECTOR
+        [Sirenix.OdinInspector.FoldoutGroup("Read only variables", false)]
+        [Sirenix.OdinInspector.ReadOnly]
+#endif
         [SerializeField] private int leftLoopCount = -1;
 
-        float                        elappsedSeconds;
-        int                          _currentIndex;
-        bool                         _isPaused = true;
+        float elappsedSeconds;
+        float nextUpdateSeconds;
+        int   _currentIndex;
+        bool  _isPaused = true;
+
+#if ODIN_INSPECTOR
+        [Sirenix.OdinInspector.FoldoutGroup("Read only variables", false)]
+        [Sirenix.OdinInspector.ReadOnly]
+#endif
         [SerializeField] private int nextEventTriggerIndex = -1;
 
         public Action         onComplete;
@@ -53,9 +63,10 @@
         {
             // do nothing
         }
-        
+
 #if ODIN_INSPECTOR
-        [Button]
+        [Sirenix.OdinInspector.FoldoutGroup("Methods", false)]
+        [Sirenix.OdinInspector.Button]
 #endif
         public void Set(FlipAnimInfo info)
         {
@@ -78,7 +89,8 @@
         }
 
 #if ODIN_INSPECTOR
-        [Button]
+        [Sirenix.OdinInspector.FoldoutGroup("Methods")]
+        [Sirenix.OdinInspector.Button]
 #endif
         /// <summary>
         /// イベントトリガーをセットする.
@@ -117,6 +129,7 @@
             nextEventTriggerIndex = 0;
         }
 
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         private void CheckTriggerFired()
         {
             if (nextEventTriggerIndex == -1)
@@ -126,14 +139,15 @@
 
             if (_currentIndex == triggers[nextEventTriggerIndex].index)
             {
-                Debug.Log("Fire [" + triggers[nextEventTriggerIndex].name + "]");
+//                Debug.Log("Fire [" + triggers[nextEventTriggerIndex].name + "]");
                 onEventTriggered?.Invoke(triggers[nextEventTriggerIndex].name);
                 CheckNextEventTrigger(nextEventTriggerIndex + 1);
             }
         }
 
 #if ODIN_INSPECTOR
-        [Button]
+        [Sirenix.OdinInspector.FoldoutGroup("Methods")]
+        [Sirenix.OdinInspector.Button]
 #endif
         public void SetSecPerSpr(float newSecPerSpr)
         {
@@ -141,7 +155,8 @@
         }
 
 #if ODIN_INSPECTOR
-        [Button]
+        [Sirenix.OdinInspector.FoldoutGroup("Methods")]
+        [Sirenix.OdinInspector.Button]
 #endif
         public void SetLoopCount(int newLoopCount = -1)
         {
@@ -150,7 +165,8 @@
         }
 
 #if ODIN_INSPECTOR
-        [Button]
+        [Sirenix.OdinInspector.FoldoutGroup("Methods")]
+        [Sirenix.OdinInspector.Button]
 #endif
         public void Pause()
         {
@@ -158,7 +174,8 @@
         }
 
 #if ODIN_INSPECTOR
-        [Button]
+        [Sirenix.OdinInspector.FoldoutGroup("Methods")]
+        [Sirenix.OdinInspector.Button]
 #endif
         public void Kill(bool complete = true)
         {
@@ -174,7 +191,8 @@
         }
 
 #if ODIN_INSPECTOR
-        [Button]
+        [Sirenix.OdinInspector.FoldoutGroup("Methods")]
+        [Sirenix.OdinInspector.Button]
 #endif
         public void Play()
         {
@@ -185,7 +203,8 @@
         }
 
 #if ODIN_INSPECTOR
-        [Button]
+        [Sirenix.OdinInspector.FoldoutGroup("Methods")]
+        [Sirenix.OdinInspector.Button]
 #endif
         public void Toggle()
         {
@@ -200,7 +219,8 @@
         }
 
 #if ODIN_INSPECTOR
-        [Button]
+        [Sirenix.OdinInspector.FoldoutGroup("Methods")]
+        [Sirenix.OdinInspector.Button]
 #endif
         public void Restart()
         {
@@ -214,7 +234,8 @@
         }
 
 #if ODIN_INSPECTOR
-        [Button]
+        [Sirenix.OdinInspector.FoldoutGroup("Methods")]
+        [Sirenix.OdinInspector.Button]
 #endif
         public void PlayOnce()
         {
@@ -283,6 +304,7 @@
         /// SpriteRenderer、Image、Material などに対応できるように
         /// メソッドを abstract にしている.
         /// </summary>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public abstract void SetSprite(Sprite sprite);
     }
 }
