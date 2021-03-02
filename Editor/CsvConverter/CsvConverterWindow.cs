@@ -137,8 +137,10 @@
                             GSPluginSettings.Sheet sheet = new GSPluginSettings.Sheet();
                             sheet.sheetId = s.sheetID;
                             sheet.gid     = s.gid;
+                            
+                            GlobalCCSettings gSettings = CCLogic.GetGlobalSettings();
 
-                            string absolutePath = CCLogic.GetFilePathRelativesToAssets(settingPath, s.csvFilePath);
+                            string absolutePath = CCLogic.GetFilePathRelativesToAssets(settingPath, s.GetCsvPath(gSettings));
 
                             // 先頭の Assets を削除する
                             if (absolutePath.StartsWith("Assets/"))

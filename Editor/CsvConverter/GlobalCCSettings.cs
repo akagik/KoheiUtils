@@ -55,6 +55,9 @@ namespace KoheiUtils
         [Sirenix.OdinInspector.ShowIf("isEndMarkerEnabled")]
 #endif
         public string endMarker = "END";
+        
+        [Tooltip("csv ファイルのパスを指定しなかった場合のデフォルトのパス")]
+        public string tempCsvPath = "/temp/temp.csv";
 
         /// <summary>
         /// Str2Converter で利用される追加の型.

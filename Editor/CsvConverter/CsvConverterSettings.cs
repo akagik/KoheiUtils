@@ -5,9 +5,9 @@ namespace KoheiUtils
     using UnityEngine;
     using UnityEditor;
     using System.Linq;
-
 #if ODIN_INSPECTOR
     using Sirenix.OdinInspector;
+
 #endif
 
     [CreateAssetMenu(menuName = "CsvConverter/CsvConverterSettings")]
@@ -21,11 +21,14 @@ namespace KoheiUtils
 #if ODIN_INSPECTOR
             [Title("Basic Settings")]
 #endif
+#if ODIN_INSPECTOR
+            [Sirenix.OdinInspector.HideIf("tempCsvPath")]
+#endif
             [Tooltip("For example, \"../tmp/test.csv\"")]
             public string csvFilePath;
 
             public string className;
-            
+
             [Tooltip("Check a class name by fully qualified name")]
             public bool checkFullyQualifiedName;
 
@@ -42,6 +45,7 @@ namespace KoheiUtils
             public bool classGenerate;
 
 #if ODIN_INSPECTOR
+            [HideIf("isEnum")]
             [ToggleGroup("tableGenerate", "Table Generate")]
 #endif
             public bool tableGenerate;
@@ -105,6 +109,14 @@ namespace KoheiUtils
 #endif
             public string gid;
 
+#if ODIN_INSPECTOR
+            [Sirenix.OdinInspector.ShowIf("useGSPlugin")]
+#endif
+            [Tooltip("中間出力される csv ファイルのパスを Global Settings で指定された一時パスを使うようにする.")]
+            public bool tempCsvPath;
+
+            public bool verbose;
+
             // code を生成できるか？
             public bool canGenerateCode
             {
@@ -130,6 +142,15 @@ namespace KoheiUtils
                 }
             }
 
+            public string GetCsvPath(GlobalCCSettings gSettings)
+            {
+                if (useGSPlugin && tempCsvPath)
+                {
+                    return gSettings.tempCsvPath;
+                }
+                return csvFilePath;
+            }
+            
 #if ODIN_INSPECTOR && UNITY_EDITOR
             private bool IsValidClassName(string name)
             {

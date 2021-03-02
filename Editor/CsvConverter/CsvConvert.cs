@@ -12,7 +12,7 @@ namespace KoheiUtils
     {
         public static void GenerateCode(CsvConverterSettings.Setting s, GlobalCCSettings gSettings, string settingPath)
         {
-            string    csvPath   = CCLogic.GetFilePathRelativesToAssets(settingPath, s.csvFilePath);
+            string    csvPath   = CCLogic.GetFilePathRelativesToAssets(settingPath, s.GetCsvPath(gSettings));
             TextAsset textAsset = AssetDatabase.LoadAssetAtPath<TextAsset>(csvPath);
 
             if (textAsset == null)
@@ -35,7 +35,7 @@ namespace KoheiUtils
             {
                 CsvData headers  = csv.Slice(gSettings.rowIndexOfName, gSettings.rowIndexOfName + 1);
                 CsvData contents = csv.Slice(gSettings.rowIndexOfEnumContentStart);
-                string  code     = EnumGenerator.Generate(s.className, headers, contents);
+                string  code     = EnumGenerator.Generate(s.className, headers, contents, s.verbose);
 
                 string filePath = Path.Combine(directoryPath, s.className + ".cs");
                 using (StreamWriter writer = File.CreateText(filePath))
@@ -99,7 +99,7 @@ namespace KoheiUtils
 
         public static void CreateAssets(CsvConverterSettings.Setting s, GlobalCCSettings gSettings, string settingPath)
         {
-            string    csvPath   = CCLogic.GetFilePathRelativesToAssets(settingPath, s.csvFilePath);
+            string    csvPath   = CCLogic.GetFilePathRelativesToAssets(settingPath, s.GetCsvPath(gSettings));
             TextAsset textAsset = AssetDatabase.LoadAssetAtPath<TextAsset>(csvPath);
 
             if (textAsset == null)

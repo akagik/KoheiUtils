@@ -10,10 +10,14 @@ namespace KoheiUtils
         public static readonly string ID_NAME = "ID";
         public static readonly string VALUE_NAME = "VALUE";
 
-
-        public static string Generate(string name, CsvData header, CsvData contents)
+        public static string Generate(string name, CsvData header, CsvData contents, bool verbose = false)
         {
             Field[] fields = GetFieldsFromHeader(header);
+
+            if (verbose)
+            {
+                Debug.Log("header fields: " + fields.ToString<Field>());
+            }
 
             string classData = "";
             classData += "public enum " + name + "\n";
@@ -23,9 +27,11 @@ namespace KoheiUtils
             {
                 int line = i + 2;
 
-#if VERBOSE
-                Debug.Log("line:" + line);
-#endif
+
+                if (verbose)
+                {
+                    Debug.Log("line:" + line);
+                }
 
                 string eid = "";
                 int value = -1;
