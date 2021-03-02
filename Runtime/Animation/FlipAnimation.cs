@@ -34,7 +34,6 @@
 #endif
         [SerializeField] private int leftLoopCount = -1;
 
-        float elappsedSeconds;
         float nextUpdateSeconds;
         int   _currentIndex;
         bool  _isPaused = true;
@@ -198,6 +197,7 @@
         {
             _isPaused          = false;
             this.leftLoopCount = loopCount;
+            nextUpdateSeconds = Time.time + secPerSpr;
 
             SetSprite(sprites[_currentIndex]);
         }
@@ -224,10 +224,10 @@
 #endif
         public void Restart()
         {
-            elappsedSeconds    = 0;
             _currentIndex      = 0;
             _isPaused          = false;
             this.leftLoopCount = loopCount;
+            nextUpdateSeconds = Time.time + secPerSpr;
 
             SetSprite(sprites[_currentIndex]);
             CheckNextEventTrigger();
@@ -246,7 +246,6 @@
 
         public void Rewind()
         {
-            elappsedSeconds    = 0;
             _currentIndex      = 0;
             _isPaused          = true;
             this.leftLoopCount = loopCount;
@@ -271,10 +270,9 @@
                 return false;
             }
 
-            elappsedSeconds += Time.deltaTime;
-            if (elappsedSeconds >= secPerSpr)
+            if (Time.time > nextUpdateSeconds)
             {
-                elappsedSeconds = 0f;
+                nextUpdateSeconds = Time.time + secPerSpr;
                 _currentIndex   = (_currentIndex + 1) % sprites.Length;
 
                 CheckTriggerFired();
