@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEditor;
@@ -137,9 +138,19 @@ namespace KoheiUtils {
                 {
                     string targetDir = Path.GetDirectoryName(targetPathRelativeToAssets);
                     
-                    if (!Directory.Exists(targetDir)) {
-                        Debug.LogError("指定のフォルダは存在しません: " + targetDir);
-                        return;
+                    if (!Directory.Exists(targetDir))
+                    {
+                        try
+                        {
+                            Directory.CreateDirectory(targetDir);
+                            Debug.Log("指定のフォルダが存在しないため、作成しました: " + targetDir);
+                        }
+                        catch (Exception e)
+                        {
+                            Debug.LogError("指定のフォルダの作成に失敗: " + e.Message);
+                        }
+//                            Debug.LogError("指定のフォルダは存在しません: " + targetDir);
+//                        return;
                     }
 
                     using (var s = new StreamWriter(targetPathRelativeToAssets)) {
