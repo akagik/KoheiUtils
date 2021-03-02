@@ -2,6 +2,10 @@
 {
     using System;
     using UnityEngine;
+#if ODIN_INSPECTOR
+    using Sirenix.OdinInspector;
+
+#endif
 
     /// <summary>
     /// 連番アニメーションを再生する.
@@ -9,34 +13,39 @@
     /// </summary>
     public abstract class FlipAnimation : MonoBehaviour
     {
-        [SerializeField]
-        float secPerSpr;
+        // 初期化・更新設定
+        [Header("Initialize / Update Config")]
+        public bool playOnStart;
 
-        [SerializeField]
-        Sprite[] sprites;
+        public bool autoUpdate;
 
-        float elappsedSeconds;
-        int   _currentIndex;
-        bool  _isStop;
+        // 事前に設定されるべき情報.
+        [Header("Animation")]
+        [SerializeField] float secPerSpr;
+        [SerializeField] int                         loopCount = -1;
+        [SerializeField] Sprite[]                    sprites;
+        [SerializeField] FlipAnimationEventTrigger[] triggers;
 
-        [SerializeField] private int loopCount;
+        // アニメーション中に利用される変数
+        [Header("Read only variables")]
+        [SerializeField] private int leftLoopCount = -1;
 
-        public bool   playOnAwake;
-        public bool   autoUpdate;
-        public Action onComplete;
+        float                        elappsedSeconds;
+        int                          _currentIndex;
+        bool                         _isPaused = true;
+        [SerializeField] private int nextEventTriggerIndex = -1;
+
+        public Action         onComplete;
+        public Action<string> onEventTriggered;
 
         public int  currentIndex => _currentIndex;
-        public bool isStop       => _isStop;
+        public bool isPaused     => _isPaused;
 
-        void Awake()
+        void Start()
         {
-            if (playOnAwake)
+            if (playOnStart)
             {
                 Play();
-            }
-            else
-            {
-                _isStop = true;
             }
         }
 
@@ -44,53 +53,185 @@
         {
             // do nothing
         }
-
-        public virtual void Setup(Sprite[] sprites)
+        
+#if ODIN_INSPECTOR
+        [Button]
+#endif
+        public void Set(FlipAnimInfo info)
         {
-            this.sprites = sprites;
+            SetSprites(info.sprites);
+            SetTriggers(info.triggers);
+            this.secPerSpr = info.secPerFrame;
         }
 
-        public virtual void Setup(Sprite[] sprites, float secPerSpr)
+        public virtual void SetSprites(Sprite[] sprites)
+        {
+            this.sprites = sprites;
+            Rewind();
+        }
+
+        public virtual void SetSprites(Sprite[] sprites, float secPerSpr)
         {
             this.sprites   = sprites;
             this.secPerSpr = secPerSpr;
+            Rewind();
         }
 
-        public void Stop()
+#if ODIN_INSPECTOR
+        [Button]
+#endif
+        /// <summary>
+        /// イベントトリガーをセットする.
+        /// noSort が false のときはトリガーをソートしない. ソートしない場合は必ず、トリガーの配列が index 順になっているように
+        /// しなければいけない.
+        /// </summary>
+        public void SetTriggers(FlipAnimationEventTrigger[] triggers, bool noSort = true)
         {
-            _isStop = true;
+            this.triggers = triggers;
+
+            if (!noSort)
+            {
+                GenericUtils.InsertSort(triggers);
+            }
+
+            CheckNextEventTrigger();
         }
 
+        private void CheckNextEventTrigger(int startEventTriggerIndex = 0)
+        {
+            if (triggers.Length == 0)
+            {
+                nextEventTriggerIndex = -1;
+                return;
+            }
+
+            for (int i = startEventTriggerIndex; i < triggers.Length; i++)
+            {
+                if (_currentIndex <= triggers[i].index)
+                {
+                    nextEventTriggerIndex = i;
+                    return;
+                }
+            }
+
+            nextEventTriggerIndex = 0;
+        }
+
+        private void CheckTriggerFired()
+        {
+            if (nextEventTriggerIndex == -1)
+            {
+                return;
+            }
+
+            if (_currentIndex == triggers[nextEventTriggerIndex].index)
+            {
+                Debug.Log("Fire [" + triggers[nextEventTriggerIndex].name + "]");
+                onEventTriggered?.Invoke(triggers[nextEventTriggerIndex].name);
+                CheckNextEventTrigger(nextEventTriggerIndex + 1);
+            }
+        }
+
+#if ODIN_INSPECTOR
+        [Button]
+#endif
+        public void SetSecPerSpr(float newSecPerSpr)
+        {
+            this.secPerSpr = newSecPerSpr;
+        }
+
+#if ODIN_INSPECTOR
+        [Button]
+#endif
+        public void SetLoopCount(int newLoopCount = -1)
+        {
+            this.loopCount     = newLoopCount;
+            this.leftLoopCount = loopCount;
+        }
+
+#if ODIN_INSPECTOR
+        [Button]
+#endif
+        public void Pause()
+        {
+            _isPaused = true;
+        }
+
+#if ODIN_INSPECTOR
+        [Button]
+#endif
         public void Kill(bool complete = true)
         {
-            Stop();
+            Pause();
 
             if (complete)
             {
+                leftLoopCount = loopCount;
                 var _onComplete = onComplete;
                 onComplete = null;
                 _onComplete?.Invoke();
             }
         }
 
-        public void Play(int loop = -1)
+#if ODIN_INSPECTOR
+        [Button]
+#endif
+        public void Play()
         {
-            _isStop        = false;
-            this.loopCount = loop;
+            _isPaused          = false;
+            this.leftLoopCount = loopCount;
+
+            SetSprite(sprites[_currentIndex]);
         }
 
-        public void PlayFromStart(int loop = -1)
+#if ODIN_INSPECTOR
+        [Button]
+#endif
+        public void Toggle()
         {
-            elappsedSeconds = 0;
-            _currentIndex   = 0;
-            _isStop         = false;
-            this.loopCount  = loop;
+            if (isPaused)
+            {
+                Play();
+            }
+            else
+            {
+                Pause();
+            }
         }
 
+#if ODIN_INSPECTOR
+        [Button]
+#endif
+        public void Restart()
+        {
+            elappsedSeconds    = 0;
+            _currentIndex      = 0;
+            _isPaused          = false;
+            this.leftLoopCount = loopCount;
+
+            SetSprite(sprites[_currentIndex]);
+            CheckNextEventTrigger();
+        }
+
+#if ODIN_INSPECTOR
+        [Button]
+#endif
         public void PlayOnce()
         {
-            PlayFromStart();
-            this.loopCount = 1;
+            Restart();
+            this.loopCount     = 1;
+            this.leftLoopCount = 1;
+        }
+
+        public void Rewind()
+        {
+            elappsedSeconds    = 0;
+            _currentIndex      = 0;
+            _isPaused          = true;
+            this.leftLoopCount = loopCount;
+
+            SetSprite(sprites[_currentIndex]);
+            CheckNextEventTrigger();
         }
 
         void Update()
@@ -104,28 +245,32 @@
         // アニメーションが1周したときは True を返す.
         public bool OnUpdate()
         {
-            if (_isStop)
+            if (_isPaused)
             {
                 return false;
             }
 
-            SetSprite(sprites[_currentIndex]);
             elappsedSeconds += Time.deltaTime;
             if (elappsedSeconds >= secPerSpr)
             {
                 elappsedSeconds = 0f;
                 _currentIndex   = (_currentIndex + 1) % sprites.Length;
+
+                CheckTriggerFired();
                 bool isEnd = _currentIndex == 0;
 
                 if (isEnd)
                 {
-                    loopCount--;
+                    leftLoopCount--;
 
-                    if (loopCount == 0)
+                    if (leftLoopCount == 0)
                     {
                         Kill(true);
+                        return true;
                     }
                 }
+
+                SetSprite(sprites[_currentIndex]);
 
                 return isEnd;
             }

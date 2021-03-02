@@ -22,15 +22,15 @@
             CreateMaterial();
         }
 
-        public override void Setup(Sprite[] sprites)
+        public override void SetSprites(Sprite[] sprites)
         {
-            base.Setup(sprites);
+            base.SetSprites(sprites);
             CreateMaterial();
         }
 
-        public override void Setup(Sprite[] sprites, float secPerSpr)
+        public override void SetSprites(Sprite[] sprites, float secPerSpr)
         {
-            base.Setup(sprites, secPerSpr);
+            base.SetSprites(sprites, secPerSpr);
             CreateMaterial();
         }
 

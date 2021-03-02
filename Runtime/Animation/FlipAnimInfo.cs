@@ -10,5 +10,7 @@
     public class FlipAnimInfo : ScriptableObject
     {
         public Sprite[] sprites;
+        public FlipAnimationEventTrigger[] triggers;
+        public float secPerFrame = 0.1f;
     }
 }
