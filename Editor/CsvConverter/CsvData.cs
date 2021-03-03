@@ -28,7 +28,7 @@ namespace KoheiUtils
             {
                 data = new string[col];
             }
-            
+
             public Row Slice(int startIndex, int endIndex = int.MaxValue)
             {
                 int n = data.Length;
@@ -54,6 +54,11 @@ namespace KoheiUtils
                 Row row = new Row(endIndex - startIndex);
                 Array.Copy(data, startIndex, row.data, 0, row.data.Length);
                 return row;
+            }
+
+            public override string ToString()
+            {
+                return data.ToString<string>();
             }
         }
 
@@ -93,7 +98,7 @@ namespace KoheiUtils
             Array.Copy(content, startIndex, newContent, 0, newContent.Length);
             return new CsvData(newContent);
         }
-        
+
         public CsvData SliceColumn(int startIndex, int endIndex = int.MaxValue)
         {
             int n = col;
@@ -116,6 +121,7 @@ namespace KoheiUtils
             {
                 newContent[i] = content[i].Slice(startIndex, endIndex);
             }
+
             return new CsvData(newContent);
         }
 
@@ -178,10 +184,13 @@ namespace KoheiUtils
             {
                 for (int j = 0; j < col; j++)
                 {
-                    s += "\"" + Get(i, j) + "\", ";
+                    string value = Get(i, j);
+                    value =  value.Replace("\"", "\"\"");
+                    value =  value.Replace("\n", "\\n");
+                    s     += "\"" + value + "\", ";
                 }
 
-                s = s.Substring(0, s.Length - 2);
+                s =  s.Substring(0, s.Length - 2);
                 s += "\n";
             }
 
