@@ -27,12 +27,6 @@ namespace KoheiUtils
             {
                 int line = i + 2;
 
-
-                if (verbose)
-                {
-                    Debug.Log("line:" + line);
-                }
-
                 string eid = "";
                 int value = -1;
                 bool isOkEid = false;
@@ -45,8 +39,11 @@ namespace KoheiUtils
 
                     if (f.fieldName == ID_NAME)
                     {
-                        isOkEid = true;
                         eid = contents.Get(i, j).Trim();
+                        if (!string.IsNullOrWhiteSpace(eid))
+                        {
+                            isOkEid = true;
+                        }
                     }
                     else if (f.fieldName == VALUE_NAME)
                     {
@@ -64,8 +61,18 @@ namespace KoheiUtils
 
                 if (!isOkEid || !isOkValue)
                 {
+                    if (verbose)
+                    {
+                        Debug.Log(i + ": INVALID : " + contents.content[i].ToString());
+                    }
                     continue;
                 }
+                
+                if (verbose)
+                {
+                    Debug.Log(i + ": OK : " + contents.content[i].ToString());
+                }
+
 
                 classData += string.Format(FIELD_FORMAT, eid, value);
             }
