@@ -6,6 +6,9 @@ All notable changes to this package will be documented in this file. The format 
 ### Features
 - Add StateMachineL
 - Add ObjectPool
+- Add FlipAnimator
+- Refine flip animation
+- Csv Converter 改行を含む csv に対応
 
 ## [0.0.4] - 2021-02-20
 
