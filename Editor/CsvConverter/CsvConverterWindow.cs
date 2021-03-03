@@ -140,7 +140,14 @@
                             
                             GlobalCCSettings gSettings = CCLogic.GetGlobalSettings();
 
-                            string absolutePath = CCLogic.GetFilePathRelativesToAssets(settingPath, s.GetCsvPath(gSettings));
+                            string csvPath = s.GetCsvPath(gSettings);
+                            if (string.IsNullOrWhiteSpace(csvPath))
+                            {
+                                Debug.LogError("unexpected downloadPath: " + csvPath);
+                                return;
+                            }
+
+                            string absolutePath = CCLogic.GetFilePathRelativesToAssets(settingPath, csvPath);
 
                             // 先頭の Assets を削除する
                             if (absolutePath.StartsWith("Assets/"))
