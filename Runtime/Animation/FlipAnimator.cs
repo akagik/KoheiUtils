@@ -11,10 +11,16 @@ namespace KoheiUtils
         [Sirenix.OdinInspector.PropertySpace(0, 10f)]
         public FlipAnimationController controller;
 
+        public Action<string> onEventTriggered
+        {
+            get => animation.onEventTriggered;
+            set => animation.onEventTriggered = value;
+        }
+
         private int       defaultLoopAnimationIndex = 0;
         private List<int> animationStacks           = new List<int>();
 
-        private int  currentAnimIndex = -1;
+        public int currentAnimIndex { get; private set; } = -1;
         private bool loop;
 
 #if ODIN_INSPECTOR
