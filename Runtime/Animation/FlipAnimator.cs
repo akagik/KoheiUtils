@@ -11,6 +11,8 @@ namespace KoheiUtils
         [Sirenix.OdinInspector.PropertySpace(0, 10f)]
         public FlipAnimationController controller;
 
+        public Action onComplete;
+
         public Action<string> onEventTriggered
         {
             get => animation.onEventTriggered;
@@ -115,6 +117,9 @@ namespace KoheiUtils
         {
             if (animation.OnUpdate() && !loop)
             {
+                onComplete.Invoke();
+                onComplete = null;
+                
                 if (!CheckStacks())
                 {
                     PlayDefault();
