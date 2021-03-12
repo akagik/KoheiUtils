@@ -117,7 +117,7 @@ namespace KoheiUtils
         {
             if (animation.OnUpdate() && !loop)
             {
-                onComplete.Invoke();
+                onComplete?.Invoke();
                 onComplete = null;
                 
                 if (!CheckStacks())
