@@ -1,6 +1,11 @@
 # Changelog
 All notable changes to this package will be documented in this file. The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
 
+## [0.0.9] - 2021-03-15
+
+### Fixed
+- Fix -1 default loop index
+
 ## [0.0.8] - 2021-03-12
 
 ### Fixed
