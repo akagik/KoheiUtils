@@ -19,6 +19,7 @@ namespace KoheiUtils
             set => animation.onEventTriggered = value;
         }
 
+        // -1 のときは、単発アニメーションを再生しても、デフォルトループに戻らない.
         private int       defaultLoopAnimationIndex = 0;
         private List<int> animationStacks           = new List<int>();
 
@@ -40,7 +41,10 @@ namespace KoheiUtils
 #endif
         public void PlayDefault()
         {
-            PlayLoop(defaultLoopAnimationIndex);
+            if (defaultLoopAnimationIndex != -1)
+            {
+                PlayLoop(defaultLoopAnimationIndex);
+            }
         }
 
 #if ODIN_INSPECTOR
