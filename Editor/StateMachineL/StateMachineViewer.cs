@@ -5,21 +5,27 @@
     using UnityEngine;
     using UnityEditor;
 
+#if ODIN_INSPECTOR
+    public class StateMachineViewer : Sirenix.OdinInspector.Editor.OdinEditorWindow
+#else
     public class StateMachineViewer : EditorWindow
+#endif
     {
-        public MonoBehaviour selectedView;
-        public string        propertyName;
+        [HideInInspector] public    MonoBehaviour selectedView;
+        [HideInInspector] public    string        propertyName;
+        [HideInInspector] protected StateMachine  fsm;
 
         [MenuItem("KoheiUtils/StateMachineL/ShowViewer")]
         private static void ShowWindow()
         {
             // 生成
-            GetWindow<StateMachineViewer>("StateMachine Viewer");
+            GetWindow<StateMachineViewer>("StateMachine Viewer").Show();
         }
 
         void OnGUI()
         {
             Render();
+            base.OnGUI();
         }
 
         private void Render()
@@ -38,16 +44,7 @@
                     return;
                 }
 
-                var selectedType = selectedView.GetType();
-                var fsmProperty  = selectedType.GetField(propertyName);
-
-                if (fsmProperty == null)
-                {
-                    EditorGUILayout.LabelField("Specified property name NOT exits");
-                    return;
-                }
-
-                StateMachine fsm = (StateMachine) fsmProperty.GetValue(selectedView);
+                fsm = GetFieldOrPropertyValue(selectedView);
 
                 if (fsm == null)
                 {
@@ -106,6 +103,26 @@
             }
         }
 
+        private StateMachine GetFieldOrPropertyValue(MonoBehaviour selectedView)
+        {
+            var selectedType = selectedView.GetType();
+            var fsmProperty  = selectedType.GetProperty(propertyName);
+
+            if (fsmProperty != null)
+            {
+                return (StateMachine) fsmProperty.GetValue(selectedView);
+            }
+
+            var fsmField = selectedType.GetField(propertyName);
+
+            if (fsmField != null)
+            {
+                return (StateMachine) fsmField.GetValue(selectedView);
+            }
+
+            return null;
+        }
+
         void Update()
         {
             if (Time.frameCount % 10 == 0)
@@ -113,5 +130,12 @@
                 Repaint();
             }
         }
+#if ODIN_INSPECTOR
+        [Sirenix.OdinInspector.Button]
+        public void ChangeState(int stateId)
+        {
+            fsm.ChangeStateWithoutParam(stateId);
+        }
+#endif
     }
 }
