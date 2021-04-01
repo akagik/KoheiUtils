@@ -11,6 +11,8 @@ namespace KoheiUtils
         [Sirenix.OdinInspector.PropertySpace(0, 10f)]
         public FlipAnimationController controller;
 
+        [SerializeField] bool playOnStart = true;
+
         public Action onComplete;
 
         public Action<string> onEventTriggered
@@ -23,7 +25,7 @@ namespace KoheiUtils
         private int       defaultLoopAnimationIndex = 0;
         private List<int> animationStacks           = new List<int>();
 
-        public int currentAnimIndex { get; private set; } = -1;
+        public  int  currentAnimIndex { get; private set; } = -1;
         private bool loop;
 
 #if ODIN_INSPECTOR
@@ -70,7 +72,7 @@ namespace KoheiUtils
             animation.Set(controller.animations[animationIndex]);
             animation.SetLoopCount(1);
             animation.Play();
-            
+
             currentAnimIndex = animationIndex;
             loop             = false;
         }
@@ -108,13 +110,16 @@ namespace KoheiUtils
 
         private void Awake()
         {
-            animation.autoUpdate = false;
+            animation.autoUpdate  = false;
             animation.playOnStart = false;
         }
-        
+
         private void Start()
         {
-            PlayDefault();
+            if (playOnStart)
+            {
+                PlayDefault();
+            }
         }
 
         void Update()
@@ -123,7 +128,7 @@ namespace KoheiUtils
             {
                 onComplete?.Invoke();
                 onComplete = null;
-                
+
                 if (!CheckStacks())
                 {
                     PlayDefault();
