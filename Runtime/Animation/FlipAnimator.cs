@@ -10,7 +10,7 @@ namespace KoheiUtils
         {
             return key2index.Get(key);
         }
-
+        
 #if ODIN_INSPECTOR
         [Sirenix.OdinInspector.FoldoutGroup("Methods", false)]
         [Sirenix.OdinInspector.Button]
@@ -28,5 +28,15 @@ namespace KoheiUtils
         {
             key2index.Remove(newKey);
         }
+        
+#if ODIN_INSPECTOR
+        [Sirenix.OdinInspector.FoldoutGroup("Methods", false)]
+        [Sirenix.OdinInspector.Button]
+#endif
+        public void Clear()
+        {
+            key2index.Clear();
+        }
+
     }
 }

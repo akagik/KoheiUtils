@@ -5,17 +5,26 @@ using System.Collections.Generic;
 namespace KoheiUtils
 {
     [RequireComponent(typeof(FlipAnimation))]
-    public abstract class FlipAnimatorBase : MonoBehaviour
+    public class FlipAnimatorBase : MonoBehaviour
     {
         [SerializeField] bool playOnStart = true;
-
-        public Action onComplete;
 
         public Action<string> onEventTriggered
         {
             get => animation.onEventTriggered;
             set => animation.onEventTriggered = value;
         }
+        
+        /// <summary>
+        /// アニメーションが完了したときに呼び出される.
+        /// </summary>
+        private Action onComplete;
+        
+        /// <summary>
+        /// アニメーションが終了したときに呼び出される.
+        /// 途中で中断しても呼び出される.
+        /// </summary>
+        private Action onEnd;
 
         // -1 のときは、単発アニメーションを再生しても、デフォルトループに戻らない.
         private int       defaultLoopAnimationIndex = 0;
@@ -37,26 +46,36 @@ namespace KoheiUtils
         [Sirenix.OdinInspector.FoldoutGroup("Methods")]
         [Sirenix.OdinInspector.Button]
 #endif
-        public void PlayDefault()
+        public void PlayDefault(Action onComplete = null, Action onEnd = null)
         {
             if (defaultLoopAnimationIndex != -1)
             {
-                PlayLoop(defaultLoopAnimationIndex);
+                PlayLoop(defaultLoopAnimationIndex, onComplete, onEnd);
             }
         }
 
-        public abstract FlipAnimInfo GetFlipAnimInfo(int key);
-
+        // ---------------------------------
+        // Virtual methods
+        // ---------------------------------
+        public virtual FlipAnimInfo GetFlipAnimInfo(int key)
+        {
+            return null;
+        }
+        
 #if ODIN_INSPECTOR
         [Sirenix.OdinInspector.FoldoutGroup("Methods")]
         [Sirenix.OdinInspector.Button]
 #endif
-        public void PlayLoop(int animationIndex)
+        public void PlayLoop(int animationIndex, Action onComplete = null, Action onEnd = null)
         {
             var info = GetFlipAnimInfo(animationIndex);
 
             if (!ReferenceEquals(info, null))
             {
+                this.onComplete = onComplete;
+                this.onEnd?.Invoke();
+                this.onEnd = onEnd;
+                
                 animation.Set(info);
                 animation.SetLoopCount(-1);
                 animation.Play();
@@ -74,12 +93,16 @@ namespace KoheiUtils
         [Sirenix.OdinInspector.FoldoutGroup("Methods")]
         [Sirenix.OdinInspector.Button]
 #endif
-        public void Play(int animationIndex)
+        public void Play(int animationIndex, Action onComplete = null, Action onEnd = null)
         {
             var info = GetFlipAnimInfo(animationIndex);
 
             if (!ReferenceEquals(info, null))
             {
+                this.onComplete = onComplete;
+                this.onEnd?.Invoke();
+                this.onEnd = onEnd;
+                
                 animation.Set(info);
                 animation.SetLoopCount(1);
                 animation.Play();
@@ -144,6 +167,9 @@ namespace KoheiUtils
             {
                 onComplete?.Invoke();
                 onComplete = null;
+                
+                onEnd?.Invoke();
+                onEnd = null;
 
                 if (!CheckStacks())
                 {
