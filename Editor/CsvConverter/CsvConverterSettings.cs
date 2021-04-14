@@ -32,7 +32,8 @@ namespace KoheiUtils
             [Tooltip("Check a class name by fully qualified name")]
             public bool checkFullyQualifiedName;
 
-            public string destination = "";
+            public string destination     = "";
+            public string codeDestination = "";
 
 #if ODIN_INSPECTOR
             [Title("Advanced Settings")]
@@ -52,9 +53,10 @@ namespace KoheiUtils
 
 #if ODIN_INSPECTOR
             [ToggleGroup("tableGenerate")]
-            [ValidateInput("IsValidClassName")]
+            [InfoBox("If empty string, its value is \"{ClassName}Table\".")]
 #endif
-            public string tableClassName;
+            [SerializeField]
+            string tableClassName;
 
 #if ODIN_INSPECTOR
             [ToggleGroup("tableGenerate")]
@@ -129,6 +131,19 @@ namespace KoheiUtils
                 get { return !isEnum; }
             }
 
+            public string TableClassName
+            {
+                get
+                {
+                    if (string.IsNullOrWhiteSpace(tableClassName))
+                    {
+                        return className + "Table";
+                    }
+
+                    return tableClassName;
+                }
+            }
+
             public string tableAssetName
             {
                 get
@@ -138,7 +153,7 @@ namespace KoheiUtils
                         return _tableAssetName;
                     }
 
-                    return tableClassName;
+                    return TableClassName;
                 }
             }
 
@@ -148,9 +163,10 @@ namespace KoheiUtils
                 {
                     return gSettings.tempCsvPath;
                 }
+
                 return csvFilePath;
             }
-            
+
 #if ODIN_INSPECTOR && UNITY_EDITOR
             private bool IsValidClassName(string name)
             {

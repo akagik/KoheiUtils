@@ -21,7 +21,7 @@ namespace KoheiUtils
                 return;
             }
 
-            string directoryPath = CCLogic.GetFullPath(settingPath, s.destination);
+            string directoryPath = CCLogic.GetFullPath(settingPath, s.codeDestination);
 
             if (!Directory.Exists(directoryPath))
             {
@@ -81,9 +81,9 @@ namespace KoheiUtils
                         key = keyFieldList.ToArray();
                     }
 
-                    string code = ClassGenerator.GenerateTableClass(s, s.tableClassName, key);
+                    string code = ClassGenerator.GenerateTableClass(s, s.TableClassName, key);
 
-                    string filePath = Path.Combine(directoryPath, s.tableClassName + ".cs");
+                    string filePath = Path.Combine(directoryPath, s.TableClassName + ".cs");
                     using (StreamWriter writer = File.CreateText(filePath))
                     {
                         writer.WriteLine(code);
@@ -141,13 +141,13 @@ namespace KoheiUtils
                 assetsGenerator.SetCustomAssetTypes(customAssetTypes);
             }
 
-            // 生成する各要素の class type を取得
             Type assetType;
             if (!TryGetTypeWithError(s.className, out assetType, s.checkFullyQualifiedName))
             {
                 return;
             }
 
+            // 生成する各要素の class type を取得
             // class のフィールド名と一致しないものは除外する.
             for (int j = 0; j < fields.Length; j++)
             {
@@ -172,7 +172,7 @@ namespace KoheiUtils
             Type tableType = null;
             if (s.tableGenerate)
             {
-                if (!TryGetTypeWithError(s.tableClassName, out tableType, s.checkFullyQualifiedName))
+                if (!TryGetTypeWithError(s.TableClassName, out tableType, s.checkFullyQualifiedName))
                 {
                     return;
                 }
@@ -227,30 +227,36 @@ namespace KoheiUtils
             EditorUtility.ClearProgressBar();
         }
 
-        public static bool TryGetTypeWithError(string name, out Type type, bool fullyQualifiedName = false)
+        public static bool TryGetTypeWithError(string name, out Type type, bool fullyQualifiedName = false,
+            bool                                      dialog = true)
         {
             List<Type> candidates = CCLogic.GetTypeByName(name, fullyQualifiedName);
             type = null;
 
             if (candidates.Count == 0)
             {
-                EditorUtility.DisplayDialog(
-                    "Error",
-                    "Cannot find the class \"" + name + "\", please execute \"Tools/CsvConverter/Generate Code\".",
-                    "ok"
-                );
+                if (dialog)
+                    EditorUtility.DisplayDialog(
+                        "Error",
+                        "Cannot find the class \"" + name + "\", please execute \"Tools/CsvConverter/Generate Code\".",
+                        "ok"
+                    );
                 return false;
             }
 
             if (candidates.Count > 1)
             {
-                string msg = "複数候補の class が発見されました: \"" + name + "\".";
-                msg += candidates.ToString<Type>();
-                EditorUtility.DisplayDialog(
-                    "Error",
-                    msg,
-                    "ok"
-                );
+                if (dialog)
+                {
+                    string msg = "複数候補の class が発見されました: \"" + name + "\".";
+                    msg += candidates.ToString<Type>();
+                    EditorUtility.DisplayDialog(
+                        "Error",
+                        msg,
+                        "ok"
+                    );
+                }
+
                 return false;
             }
 

@@ -67,15 +67,17 @@
         /// </summary>
         public static string GetMainOutputPath(CsvConverterSettings.Setting s, string settingsPath)
         {
-            var dst = CCLogic.GetFilePathRelativesToAssets(settingsPath, s.destination);
-
+            string dst = "";
+            
             if (s.isEnum)
             {
+                dst = CCLogic.GetFilePathRelativesToAssets(settingsPath, s.codeDestination);
                 return Path.Combine(dst, s.className + ".cs");
             }
 
             if (s.tableGenerate)
             {
+                dst = CCLogic.GetFilePathRelativesToAssets(settingsPath, s.destination);
                 return Path.Combine(dst, s.tableAssetName + ".asset");
             }
 
@@ -90,7 +92,7 @@
             List<Type> candidates = new List<Type>();
 
             Func<Type, bool> checkFunc;
-            
+
             if (fullyQualifiedName)
             {
                 checkFunc = (type) => type.ToString() == name;

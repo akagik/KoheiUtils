@@ -132,36 +132,42 @@
 
                     if (s.useGSPlugin)
                     {
+                        if (GUILayout.Button("Import", GUILayout.Width(110)))
+                        {
+                            if (!ExecuteDownload(s, settingPath))
+                            {
+                                CreateAssetsJob createAssetsJob = new CreateAssetsJob(s, settingPath);
+
+                                // Generate Code if type script is not found.
+                                Type assetType;
+                                if (!CsvConvert.TryGetTypeWithError(s.className, out assetType,
+                                    s.checkFullyQualifiedName, dialog: false))
+                                {
+                                    GlobalCCSettings gSettings = CCLogic.GetGlobalSettings();
+                                    isDownloading = true;
+                                    GenerateOneCode(s, gSettings, settingPath);
+                                    isDownloading = false;
+
+                                    EditorUtility.DisplayDialog(
+                                        "Code Generated",
+                                        "Please reimport for creating assets after compiling",
+                                        "ok"
+                                    );
+                                }
+                                // Create Assets
+                                else
+                                {
+                                    createAssetsJob.Execute();
+                                }
+                            }
+
+                            GUIUtility.ExitGUI();
+                        }
+
                         if (GUILayout.Button("DownLoad", GUILayout.Width(110)))
                         {
-                            GSPluginSettings.Sheet sheet = new GSPluginSettings.Sheet();
-                            sheet.sheetId = s.sheetID;
-                            sheet.gid     = s.gid;
-                            
-                            GlobalCCSettings gSettings = CCLogic.GetGlobalSettings();
-
-                            string csvPath = s.GetCsvPath(gSettings);
-                            if (string.IsNullOrWhiteSpace(csvPath))
-                            {
-                                Debug.LogError("unexpected downloadPath: " + csvPath);
-                                return;
-                            }
-
-                            string absolutePath = CCLogic.GetFilePathRelativesToAssets(settingPath, csvPath);
-
-                            // 先頭の Assets を削除する
-                            if (absolutePath.StartsWith("Assets/"))
-                            {
-                                sheet.targetPath = absolutePath.Substring(6);
-                            }
-                            else
-                            {
-                                Debug.LogError("unexpected downloadPath: " + absolutePath);
-                            }
-
-                            sheet.isCsv = true;
-
-                            GSEditorWindow.DownloadOne(sheet, settingPath);
+                            ExecuteDownload(s, settingPath);
+                            GUIUtility.ExitGUI();
                         }
                     }
 
@@ -180,16 +186,13 @@
 
                     if (GUILayout.Button("Create Assets", GUILayout.Width(110)) && !isDownloading)
                     {
-                        GlobalCCSettings gSettings = CCLogic.GetGlobalSettings();
-                        isDownloading = true;
-                        CreateOneAssets(s, gSettings, settingPath);
-                        isDownloading = false;
-
+                        CreateAssetsJob createAssetsJob = new CreateAssetsJob(s, settingPath);
+                        createAssetsJob.Execute();
                         GUIUtility.ExitGUI();
                     }
 
                     GUI.enabled = true;
-                    
+
                     // GS Plugin を使う場合は Open ボタンを用意する.
                     if (s.useGSPlugin)
                     {
@@ -241,6 +244,40 @@
 
                 GUILayout.EndHorizontal();
             }
+        }
+
+        public static bool ExecuteDownload(CsvConverterSettings.Setting s, string settingPath)
+        {
+            GSPluginSettings.Sheet sheet = new GSPluginSettings.Sheet();
+            sheet.sheetId = s.sheetID;
+            sheet.gid     = s.gid;
+
+            GlobalCCSettings gSettings = CCLogic.GetGlobalSettings();
+
+            string csvPath = s.GetCsvPath(gSettings);
+            if (string.IsNullOrWhiteSpace(csvPath))
+            {
+                Debug.LogError("unexpected downloadPath: " + csvPath);
+                return true;
+            }
+
+            string absolutePath = CCLogic.GetFilePathRelativesToAssets(settingPath, csvPath);
+
+            // 先頭の Assets を削除する
+            if (absolutePath.StartsWith("Assets/"))
+            {
+                sheet.targetPath = absolutePath.Substring(6);
+            }
+            else
+            {
+                Debug.LogError("unexpected downloadPath: " + absolutePath);
+                return true;
+            }
+
+            sheet.isCsv = true;
+
+            GSEditorWindow.DownloadOne(sheet, settingPath);
+            return false;
         }
 
         public static void GenerateAllCode(CsvConverterSettings.Setting[] setting, GlobalCCSettings gSettings,
@@ -306,23 +343,6 @@
             AssetDatabase.Refresh();
             show_progress(s.className, 1, 1, 1);
 
-            EditorUtility.ClearProgressBar();
-        }
-
-        public static void CreateOneAssets(CsvConverterSettings.Setting s, GlobalCCSettings gSettings,
-            string                                                      settingPath)
-        {
-            try
-            {
-                CsvConvert.CreateAssets(s, gSettings, settingPath);
-            }
-            catch (Exception e)
-            {
-                Debug.LogException(e);
-            }
-
-            AssetDatabase.SaveAssets();
-            AssetDatabase.Refresh();
             EditorUtility.ClearProgressBar();
         }
 
