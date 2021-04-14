@@ -1,4 +1,6 @@
-﻿namespace KoheiUtils
+﻿using Sirenix.Utilities;
+
+namespace KoheiUtils
 {
     using System;
     using System.Collections.Generic;
@@ -84,6 +86,7 @@
                 for (int i = 0; i < setting.Length; i++)
                 {
                     var s           = setting[i];
+                    var parent      = parentSettings[i];
                     var settingPath = settingPaths[i];
 
                     // 設定が削除されている場合などに対応
@@ -113,6 +116,40 @@
 
                     GUILayout.BeginHorizontal("box");
 
+#if ODIN_INSPECTOR
+                    // ------------------------------
+                    // 設定を複製ボタン.
+                    // ------------------------------
+                    if (GUILayout.Button("+", GUILayout.Width(20)))
+                    {
+                        var newList = new CsvConverterSettings.Setting[parent.list.Length + 1];
+                        Array.Copy(parent.list, newList, parent.list.Length);
+                        var copied = new CsvConverterSettings.Setting(s);
+                        newList[newList.Length - 1] = copied;
+                        parent.list                 = newList;
+
+                        var window = CCSettingsEditWindow.OpenWindow();
+                        window.SetSettings(copied, parent);
+
+                        GUIUtility.ExitGUI();
+                    }
+
+                    // ------------------------------
+                    // 設定を編集ボタン.
+                    // ------------------------------
+                    var edit = EditorGUIUtility.Load("editicon.sml") as Texture2D;
+                    if (GUILayout.Button(edit, GUILayout.Width(20)))
+                    {
+                        var window = CCSettingsEditWindow.OpenWindow();
+                        window.SetSettings(s, parent);
+                        GUIUtility.ExitGUI();
+                    }
+#endif
+
+                    // ------------------------------
+                    // テーブル名 (enum の場合は enum名) を表示.
+                    // クリックして、設定ファイルに飛べるようにする.
+                    // ------------------------------
                     if (s.tableGenerate)
                     {
                         if (GUILayout.Button(s.tableAssetName, "Label"))
@@ -130,6 +167,12 @@
                         }
                     }
 
+                    // ------------------------------
+                    // GS Plugin 使う場合のボタン.
+                    // 
+                    // Import ボタン
+                    // Open ボタン
+                    // ------------------------------
                     if (s.useGSPlugin)
                     {
                         if (GUILayout.Button("Import", GUILayout.Width(110)))
@@ -140,7 +183,7 @@
 
                                 // Generate Code if type script is not found.
                                 Type assetType;
-                                if (!CsvConvert.TryGetTypeWithError(s.className, out assetType,
+                                if (s.isEnum || !CsvConvert.TryGetTypeWithError(s.className, out assetType,
                                     s.checkFullyQualifiedName, dialog: false))
                                 {
                                     GlobalCCSettings gSettings = CCLogic.GetGlobalSettings();
@@ -148,11 +191,14 @@
                                     GenerateOneCode(s, gSettings, settingPath);
                                     isDownloading = false;
 
-                                    EditorUtility.DisplayDialog(
-                                        "Code Generated",
-                                        "Please reimport for creating assets after compiling",
-                                        "ok"
-                                    );
+                                    if (!s.isEnum)
+                                    {
+                                        EditorUtility.DisplayDialog(
+                                            "Code Generated",
+                                            "Please reimport for creating assets after compiling",
+                                            "ok"
+                                        );
+                                    }
                                 }
                                 // Create Assets
                                 else
@@ -164,45 +210,66 @@
                             GUIUtility.ExitGUI();
                         }
 
-                        if (GUILayout.Button("DownLoad", GUILayout.Width(110)))
+                        // GS Plugin を使う場合は Open ボタンを用意する.
+                        if (s.useGSPlugin)
                         {
-                            ExecuteDownload(s, settingPath);
+                            if (GUILayout.Button("Open", GUILayout.Width(80)) && !isDownloading)
+                            {
+                                GSUtils.OpenURL(s.sheetID, s.gid);
+                                GUIUtility.ExitGUI();
+                            }
+                        }
+
+
+                        if (s.verboseBtn)
+                        {
+                            if (GUILayout.Button("DownLoad", GUILayout.Width(110)))
+                            {
+                                ExecuteDownload(s, settingPath);
+                                GUIUtility.ExitGUI();
+                            }
+                        }
+                    }
+
+                    // ------------------------------
+                    // コード生成ボタン.
+                    // v0.1.2 からは Import に置き換え.
+                    // ------------------------------
+                    if (s.verboseBtn)
+                    {
+                        GUI.enabled = s.canGenerateCode;
+                        if (GUILayout.Button("Generate Code", GUILayout.Width(110)) && !isDownloading)
+                        {
+                            GlobalCCSettings gSettings = CCLogic.GetGlobalSettings();
+                            isDownloading = true;
+                            GenerateOneCode(s, gSettings, settingPath);
+                            isDownloading = false;
+
                             GUIUtility.ExitGUI();
                         }
                     }
 
-                    GUI.enabled = s.canGenerateCode;
-                    if (GUILayout.Button("Generate Code", GUILayout.Width(110)) && !isDownloading)
+                    // ------------------------------
+                    // アセット生成ボタン.
+                    // v0.1.2 からは Import に置き換え.
+                    // ------------------------------
+                    if (s.verboseBtn)
                     {
-                        GlobalCCSettings gSettings = CCLogic.GetGlobalSettings();
-                        isDownloading = true;
-                        GenerateOneCode(s, gSettings, settingPath);
-                        isDownloading = false;
+                        GUI.enabled = s.canCreateAsset;
 
-                        GUIUtility.ExitGUI();
-                    }
-
-                    GUI.enabled = s.canCreateAsset;
-
-                    if (GUILayout.Button("Create Assets", GUILayout.Width(110)) && !isDownloading)
-                    {
-                        CreateAssetsJob createAssetsJob = new CreateAssetsJob(s, settingPath);
-                        createAssetsJob.Execute();
-                        GUIUtility.ExitGUI();
+                        if (GUILayout.Button("Create Assets", GUILayout.Width(110)) && !isDownloading)
+                        {
+                            CreateAssetsJob createAssetsJob = new CreateAssetsJob(s, settingPath);
+                            createAssetsJob.Execute();
+                            GUIUtility.ExitGUI();
+                        }
                     }
 
                     GUI.enabled = true;
 
-                    // GS Plugin を使う場合は Open ボタンを用意する.
-                    if (s.useGSPlugin)
-                    {
-                        if (GUILayout.Button("Open", GUILayout.Width(80)) && !isDownloading)
-                        {
-                            GSUtils.OpenURL(s.sheetID, s.gid);
-                            GUIUtility.ExitGUI();
-                        }
-                    }
-
+                    // ------------------------------
+                    // 成果物参照まど.
+                    // ------------------------------
                     {
                         string mainOutputPath = CCLogic.GetMainOutputPath(s, settingPath);
 

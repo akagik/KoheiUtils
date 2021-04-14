@@ -18,6 +18,35 @@ namespace KoheiUtils
         [Serializable]
         public class Setting
         {
+            public Setting()
+            {
+                
+            }
+
+            public Setting(Setting orig)
+            {
+                this.csvFilePath = orig.csvFilePath;
+                this.className = orig.className;
+                this.checkFullyQualifiedName = orig.checkFullyQualifiedName;
+                this.destination = orig.destination;
+                this.codeDestination = orig.codeDestination;
+                this.isEnum = orig.isEnum;
+                this.classGenerate = orig.classGenerate;
+                this.tableGenerate = orig.tableGenerate;
+                this.tableClassName = orig.tableClassName;
+                this._tableAssetName = orig._tableAssetName;
+                this.tableClassGenerate = orig.tableClassGenerate;
+                this.isDictionary = orig.isDictionary;
+                this.onlyTableCreate = orig.onlyTableCreate;
+                this.key = orig.key;
+                this.useGSPlugin = orig.useGSPlugin;
+                this.sheetID = orig.sheetID;
+                this.gid = orig.gid;
+                this.tempCsvPath = orig.tempCsvPath;
+                this.verbose = orig.verbose;
+                this.verboseBtn = orig.verboseBtn;
+            }
+
 #if ODIN_INSPECTOR
             [Title("Basic Settings")]
 #endif
@@ -118,6 +147,7 @@ namespace KoheiUtils
             public bool tempCsvPath;
 
             public bool verbose;
+            public bool verboseBtn;
 
             // code を生成できるか？
             public bool canGenerateCode
