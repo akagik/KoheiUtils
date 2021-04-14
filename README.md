@@ -16,7 +16,6 @@ Unity で言語ローカライズをするためのモジュール.
 - ja
 
 ## Requirements
-- Generic
 - TMPro
 - Odin
 

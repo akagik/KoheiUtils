@@ -1,6 +1,12 @@
 # Changelog
 All notable changes to this package will be documented in this file. The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
 
+## [0.1.2] - 2021-04-14
+- FlipAnimator.OnEnd added
+- CsvConverter import button added
+- CsvConverter edit/duplicate settings button added
+- CsvConverter code destination property added
+
 ## [0.1.1] - 2021-04-09
 - Add FlipAnimator dictionary version
 
