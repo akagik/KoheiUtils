@@ -1,6 +1,9 @@
 # Changelog
 All notable changes to this package will be documented in this file. The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
 
+## [0.1.3] - 2021-05-11
+- CsvConverter join table
+
 ## [0.1.2] - 2021-04-14
 - FlipAnimator.OnEnd added
 - CsvConverter import button added
