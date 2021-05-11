@@ -1,4 +1,5 @@
-﻿using Sirenix.Utilities;
+﻿using System.Collections;
+using Sirenix.Utilities;
 
 namespace KoheiUtils
 {
@@ -177,36 +178,7 @@ namespace KoheiUtils
                     {
                         if (GUILayout.Button("Import", GUILayout.Width(110)))
                         {
-                            if (!ExecuteDownload(s, settingPath))
-                            {
-                                CreateAssetsJob createAssetsJob = new CreateAssetsJob(s, settingPath);
-
-                                // Generate Code if type script is not found.
-                                Type assetType;
-                                if (s.isEnum || !CsvConvert.TryGetTypeWithError(s.className, out assetType,
-                                    s.checkFullyQualifiedName, dialog: false))
-                                {
-                                    GlobalCCSettings gSettings = CCLogic.GetGlobalSettings();
-                                    isDownloading = true;
-                                    GenerateOneCode(s, gSettings, settingPath);
-                                    isDownloading = false;
-
-                                    if (!s.isEnum)
-                                    {
-                                        EditorUtility.DisplayDialog(
-                                            "Code Generated",
-                                            "Please reimport for creating assets after compiling",
-                                            "ok"
-                                        );
-                                    }
-                                }
-                                // Create Assets
-                                else
-                                {
-                                    createAssetsJob.Execute();
-                                }
-                            }
-
+                            EditorCoroutineRunner.StartCoroutine(ExecuteImport(s, settingPath));
                             GUIUtility.ExitGUI();
                         }
 
@@ -225,7 +197,7 @@ namespace KoheiUtils
                         {
                             if (GUILayout.Button("DownLoad", GUILayout.Width(110)))
                             {
-                                ExecuteDownload(s, settingPath);
+                                EditorCoroutineRunner.StartCoroutine(ExecuteDownload(s, settingPath));
                                 GUIUtility.ExitGUI();
                             }
                         }
@@ -313,7 +285,45 @@ namespace KoheiUtils
             }
         }
 
-        public static bool ExecuteDownload(CsvConverterSettings.Setting s, string settingPath)
+        static bool downloadSuccess;
+
+        static IEnumerator ExecuteImport(CsvConverterSettings.Setting s, string settingPath)
+        {
+            downloadSuccess = false;
+            yield return EditorCoroutineRunner.StartCoroutine(ExecuteDownload(s, settingPath));
+
+            if (!downloadSuccess)
+            {
+                yield break;
+            }
+            
+            CreateAssetsJob createAssetsJob = new CreateAssetsJob(s, settingPath);
+
+            // Generate Code if type script is not found.
+            Type assetType;
+            if (s.isEnum || !CsvConvert.TryGetTypeWithError(s.className, out assetType,
+                s.checkFullyQualifiedName, dialog: false))
+            {
+                GlobalCCSettings gSettings = CCLogic.GetGlobalSettings();
+                GenerateOneCode(s, gSettings, settingPath);
+
+                if (!s.isEnum)
+                {
+                    EditorUtility.DisplayDialog(
+                        "Code Generated",
+                        "Please reimport for creating assets after compiling",
+                        "ok"
+                    );
+                }
+            }
+            // Create Assets
+            else
+            {
+                createAssetsJob.Execute();
+            }
+        }
+        
+        public static IEnumerator ExecuteDownload(CsvConverterSettings.Setting s, string settingPath)
         {
             GSPluginSettings.Sheet sheet = new GSPluginSettings.Sheet();
             sheet.sheetId = s.sheetID;
@@ -325,7 +335,8 @@ namespace KoheiUtils
             if (string.IsNullOrWhiteSpace(csvPath))
             {
                 Debug.LogError("unexpected downloadPath: " + csvPath);
-                return true;
+                downloadSuccess = false;
+                yield break;
             }
 
             string absolutePath = CCLogic.GetFilePathRelativesToAssets(settingPath, csvPath);
@@ -338,13 +349,22 @@ namespace KoheiUtils
             else
             {
                 Debug.LogError("unexpected downloadPath: " + absolutePath);
-                return true;
+                downloadSuccess = false;
+                yield break;
             }
 
             sheet.isCsv = true;
 
-            GSEditorWindow.DownloadOne(sheet, settingPath);
-            return false;
+            string title = "Google Spreadsheet Loader";
+            yield return EditorCoroutineRunner.StartCoroutineWithUI(GSEditorWindow.Download(sheet, settingPath), title, true);
+            
+            // 成功判定を行う.
+            if (GSEditorWindow.previousDownloadSuccess)
+            {
+                downloadSuccess = true;
+            }
+            
+            yield break;
         }
 
         public static void GenerateAllCode(CsvConverterSettings.Setting[] setting, GlobalCCSettings gSettings,

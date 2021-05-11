@@ -19,6 +19,8 @@ namespace KoheiUtils {
         // 二重に保存しないようにするために導入
         private string savedGUID;
 
+        public static bool previousDownloadSuccess;
+
         [MenuItem("Window/GSPlugin", false, 0)]
         static public void OpenWindow() {
             EditorWindow.GetWindow<GSEditorWindow>(false, "GSPlugin", true).Show();
@@ -129,7 +131,9 @@ namespace KoheiUtils {
             EditorCoroutineRunner.StartCoroutineWithUI(Download(sheet, settingPath), title, true);
         }
 
-        public static IEnumerator Download(GSPluginSettings.Sheet ss, string settingDir) {
+        public static IEnumerator Download(GSPluginSettings.Sheet ss, string settingDir)
+        {
+            previousDownloadSuccess = false;
             string sheetId = ss.sheetId;
             string gid = ss.gid;
             
@@ -178,6 +182,7 @@ namespace KoheiUtils {
                 }
                 Debug.Log("Write " + ss.targetPath);
                 
+                previousDownloadSuccess = true;
                 AssetDatabase.Refresh();
             }
             else {
