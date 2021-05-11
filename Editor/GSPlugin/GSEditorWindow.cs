@@ -1,4 +1,5 @@
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEditor;
@@ -102,34 +103,49 @@ namespace KoheiUtils {
         }
 
         private void DownloadAll(List<GSPluginSettings.Sheet> sheets, string settingDir) {
+            string title = "Downloading All";
+            
+            EditorCoroutineRunner.StartCoroutineWithUI(downloadAll(sheets, settingDir), title, true);
+        }
+        
+        private static IEnumerator downloadAll(List<GSPluginSettings.Sheet> sheets, string settingDir) {
             float progress = 0f;
             int i = 0;
 
             foreach (var ss in sheets) {
-                show_progress(ss.targetPath, progress, i, sheets.Count);
-                Download(ss, settingDir);
-
+                EditorCoroutineRunner.UpdateUILabel("Downloading " + ss.targetPath);
+                yield return EditorCoroutineRunner.StartCoroutine(Download(ss, settingDir));
                 progress = (float)(++i) / sheets.Count;
+                EditorCoroutineRunner.UpdateUIProgressBar(progress);
             }
-            show_progress("", progress, i, sheets.Count);
 
             AssetDatabase.Refresh();
-            EditorUtility.ClearProgressBar();
         }
 
-        public static void DownloadOne(GSPluginSettings.Sheet sheet, string settingPath) {
-            show_progress(sheet.targetPath, 0f, 0, 1);
-            Download(sheet, settingPath);
-            show_progress(sheet.targetPath, 1f, 1, 1);
-            AssetDatabase.Refresh();
-            EditorUtility.ClearProgressBar();
+        public static void DownloadOne(GSPluginSettings.Sheet sheet, string settingPath)
+        {
+            string title = "Google Spreadsheet Loader";
+            
+            EditorCoroutineRunner.StartCoroutineWithUI(Download(sheet, settingPath), title, true);
         }
 
-        public static void Download(GSPluginSettings.Sheet ss, string settingDir) {
+        public static IEnumerator Download(GSPluginSettings.Sheet ss, string settingDir) {
             string sheetId = ss.sheetId;
             string gid = ss.gid;
+            
+            string label = "Downloading " + ss.targetPath;
+            EditorCoroutineRunner.UpdateUILabel(label);
 
-            CsvData csvData = GSLoader.LoadGS(sheetId, gid);
+            var gsLoader = new GSLoader();
+            yield return EditorCoroutineRunner.StartCoroutine(gsLoader.LoadGS(sheetId, gid));
+
+            if (!gsLoader.isSuccess)
+            {
+                Debug.Log("Failed to load spreadsheet data.");
+                yield break;
+            }
+            
+            CsvData csvData = gsLoader.loadedCsvData;
 
             string targetPathRelativeToAssets = ss.GetFilePathRelativesToAssets(settingDir);
             
@@ -161,14 +177,12 @@ namespace KoheiUtils {
                     AssetDatabase.CreateAsset(csvData, targetPathRelativeToAssets);
                 }
                 Debug.Log("Write " + ss.targetPath);
+                
+                AssetDatabase.Refresh();
             }
             else {
                 Debug.LogError("Fails for " + ss.ToString());
             }
-        }
-
-        private static void show_progress(string path, float progress, int i, int total) {
-            EditorUtility.DisplayProgressBar("Progress", progress_msg(path, i, total), progress);
         }
 
         private static string progress_msg(string path, int i, int total) {
