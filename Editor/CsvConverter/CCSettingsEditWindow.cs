@@ -12,6 +12,7 @@ namespace KoheiUtils
         public string className;
         public string sheetId;
         public string gid;
+        public string key;
 
         CsvConverterSettings parent;
 
@@ -34,6 +35,7 @@ namespace KoheiUtils
             className = setting.className;
             sheetId   = setting.sheetID;
             gid       = setting.gid;
+            key       = setting.key;
         }
 
         [Button(ButtonSizes.Large), GUIColor(0, 1, 0)]
@@ -42,6 +44,7 @@ namespace KoheiUtils
             settings.className = className;
             settings.sheetID   = sheetId;
             settings.gid       = gid;
+            settings.key       = key;
 
             EditorUtility.SetDirty(parent);
             AssetDatabase.SaveAssets();
