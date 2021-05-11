@@ -13,6 +13,7 @@ namespace KoheiUtils
         public string sheetId;
         public string gid;
         public string key;
+        public bool   isDictionary;
 
         CsvConverterSettings parent;
 
@@ -32,19 +33,21 @@ namespace KoheiUtils
             this.parent   = parent;
             this.settings = setting;
 
-            className = setting.className;
-            sheetId   = setting.sheetID;
-            gid       = setting.gid;
-            key       = setting.key;
+            className    = setting.className;
+            sheetId      = setting.sheetID;
+            gid          = setting.gid;
+            key          = setting.key;
+            isDictionary = setting.isDictionary;
         }
 
         [Button(ButtonSizes.Large), GUIColor(0, 1, 0)]
         public void SaveSettings()
         {
-            settings.className = className;
-            settings.sheetID   = sheetId;
-            settings.gid       = gid;
-            settings.key       = key;
+            settings.className    = className;
+            settings.sheetID      = sheetId;
+            settings.gid          = gid;
+            settings.key          = key;
+            settings.isDictionary = isDictionary;
 
             EditorUtility.SetDirty(parent);
             AssetDatabase.SaveAssets();
