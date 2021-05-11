@@ -14,14 +14,14 @@ namespace KoheiUtils
         const string FIELD_FORMAT = "    public {0} {1};\n";
         public static readonly string ROWS = "rows";
 
-        public static string GenerateClass(string name, Field[] fields, bool onlyTable)
+        public static string GenerateClass(string name, Field[] fields, bool isPureClass)
         {
             string classData = "";
             classData = "using UnityEngine;\n";
             classData += "using System.Collections.Generic;\n";
             classData += "\n";
 
-            if (onlyTable)
+            if (isPureClass)
             {
                 classData += "[System.Serializable]\n";
                 classData += "public class " + name + "\n";

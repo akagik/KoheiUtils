@@ -51,8 +51,7 @@ namespace KoheiUtils
 
                 if (s.classGenerate)
                 {
-                    string code =
-                        ClassGenerator.GenerateClass(s.className, fields, s.tableGenerate && s.onlyTableCreate);
+                    string code = ClassGenerator.GenerateClass(s.className, fields, s.IsPureClass);
 
                     string filePath = Path.Combine(directoryPath, s.className + ".cs");
                     using (StreamWriter writer = File.CreateText(filePath))
@@ -187,6 +186,17 @@ namespace KoheiUtils
                 assetsGenerator.Setup(assetType, settingPath);
             }
 
+            if (s.join)
+            {
+                bool isSuccess = assetsGenerator.LoadJoinTable(s.targetTable, s.targetJoinListField, s.targetJoinKeyField);
+
+                if (!isSuccess)
+                {
+                    Debug.LogError("不正な Join 設定です");
+                    return;
+                }
+            }
+
             // アセットを作成する.
             for (int i = 0; i < assetsGenerator.contentRowCount; i++)
             {
@@ -196,6 +206,14 @@ namespace KoheiUtils
                 if ((resultType & ResultType.SkipNoKey) != 0)
                 {
                     Debug.LogWarningFormat("{0} line {1}: key が存在しない行をスキップしました", s.className, line);
+                }
+                if ((resultType & ResultType.JoinIndexMismatch) != 0)
+                {
+                    Debug.LogErrorFormat("{0} line {1}: Join する index の値が不正です. index は 0 から始めて連続する整数である必要があります", s.className, line);
+                }
+                if ((resultType & ResultType.JoinNoReferenceRow) != 0)
+                {
+                    Debug.LogErrorFormat("{0} line {1}: Join の対象となるマスターが存在しません", s.className, line);
                 }
 
                 int total = assetsGenerator.contentRowCount;

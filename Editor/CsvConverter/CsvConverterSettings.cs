@@ -32,12 +32,23 @@ namespace KoheiUtils
                 this.codeDestination = orig.codeDestination;
                 this.isEnum = orig.isEnum;
                 this.classGenerate = orig.classGenerate;
+                
+                // table
                 this.tableGenerate = orig.tableGenerate;
                 this.tableClassName = orig.tableClassName;
                 this._tableAssetName = orig._tableAssetName;
                 this.tableClassGenerate = orig.tableClassGenerate;
                 this.isDictionary = orig.isDictionary;
                 this.onlyTableCreate = orig.onlyTableCreate;
+                
+                // join
+                this.join = orig.join;
+                this.targetTable = orig.targetTable;
+                this.targetJoinKeyField = orig.targetJoinKeyField;
+                this.selfJoinKeyField = orig.selfJoinKeyField;
+                this.targetJoinListField = orig.targetJoinListField;
+                this.targetFindMethodName = orig.targetFindMethodName;
+                
                 this.key = orig.key;
                 this.useGSPlugin = orig.useGSPlugin;
                 this.sheetID = orig.sheetID;
@@ -74,6 +85,9 @@ namespace KoheiUtils
 #endif
             public bool classGenerate;
 
+            /// ----------------------------------------------------
+            /// テーブル設定.
+            /// ----------------------------------------------------
 #if ODIN_INSPECTOR
             [HideIf("isEnum")]
             [ToggleGroup("tableGenerate", "Table Generate")]
@@ -108,7 +122,49 @@ namespace KoheiUtils
             [ToggleGroup("tableGenerate")]
 #endif
             public bool onlyTableCreate;
+            
+            /// ----------------------------------------------------
+            /// Join List 関連.
+            /// ----------------------------------------------------
+#if ODIN_INSPECTOR
+            [HideIf("isEnum")]
+            [ToggleGroup("join", "Join")]
+#endif
+            public bool join;
 
+#if ODIN_INSPECTOR
+            [ToggleGroup("join")]
+#endif
+            [SerializeField]
+            public UnityEngine.Object targetTable;
+            
+#if ODIN_INSPECTOR
+            [ToggleGroup("join")]
+#endif
+            [SerializeField]
+            public string targetJoinKeyField;
+            
+#if ODIN_INSPECTOR
+            [ToggleGroup("join")]
+#endif
+            [SerializeField]
+            public string selfJoinKeyField;
+            
+#if ODIN_INSPECTOR
+            [ToggleGroup("join")]
+#endif
+            [SerializeField]
+            public string targetJoinListField;
+            
+#if ODIN_INSPECTOR
+            [ToggleGroup("join")]
+#endif
+            [SerializeField]
+            public string targetFindMethodName;
+
+            /// ----------------------------------------------------
+            /// その他
+            /// ----------------------------------------------------
 #if ODIN_INSPECTOR
             [HideIf("isEnum")]
 #endif
@@ -186,6 +242,9 @@ namespace KoheiUtils
                     return TableClassName;
                 }
             }
+
+            // この設定で生成される行データを ScriptableObject でなく、ピュアクラスのインスタンスとして扱うか？
+            public bool IsPureClass => (tableGenerate && onlyTableCreate) || join;
 
             public string GetCsvPath(GlobalCCSettings gSettings)
             {

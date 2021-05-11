@@ -28,6 +28,11 @@ namespace KoheiUtils
         private Type tableType;
         private ScriptableObject tableInstance;
         private object dataList = null;
+        
+        // Join 情報
+        private Type targetTableRowType;
+        FieldInfo levelListInfo;
+        FieldInfo targetTableKeyFieldInfo;
 
         // ログ情報
         public Result result;
@@ -91,13 +96,63 @@ namespace KoheiUtils
             // インスタンスを作成して、tableInstance に代入する。
             if (dataList == null)
             {
-                Type listType = typeof(List<>);
-                var constructedListType = listType.MakeGenericType(dataListField.FieldType.GenericTypeArguments[0]);
-                dataList = Activator.CreateInstance(constructedListType);
+                dataList = CreateListInstance(dataListField.FieldType.GenericTypeArguments[0]);
                 dataListField.SetValue(tableInstance, dataList);
             }
 
             dataList.GetType().GetMethod("Clear").Invoke(dataList, null);
+        }
+
+        public bool LoadJoinTable(Object tableObject, string targetFieldName, string targetKeyFieldName)
+        {
+            tableType = tableObject.GetType();
+
+            this.targetTableKeyFieldInfo = tableType.GetField(targetKeyFieldName);
+            FieldInfo dataListField = tableType.GetField(ClassGenerator.ROWS,
+                BindingFlags.Public | BindingFlags.Instance | BindingFlags.NonPublic);
+
+            tableInstance = tableObject as ScriptableObject;
+
+            if (tableInstance == null)
+            {
+                return false;
+            }
+            dataList = dataListField.GetValue(tableInstance);
+            
+            if (dataList == null)
+            {
+                return false;
+            }
+
+            this.targetTableRowType = dataList.GetType().GetGenericArguments()[0];
+            IEnumerable collection = dataList as IEnumerable;
+            this.levelListInfo = targetTableRowType.GetField(targetFieldName);
+            
+            foreach (var row in collection)
+            {
+                var levelList = levelListInfo.GetValue(row);
+
+                if (levelList == null)
+                {
+                    levelList = CreateListInstance(assetType);
+                    levelListInfo.SetValue(row, levelList);
+                }
+                else
+                {
+                    levelList.GetType().GetMethod("Clear").Invoke(levelList, null);
+                }
+            }
+            
+            return true;
+        }
+
+        private object CreateListInstance(Type elementType)
+        {
+            // 初めてテーブルを作成する場合は null になっているので、
+            // インスタンスを作成して、tableInstance に代入する。
+            Type listType = typeof(List<>);
+            var constructedListType = listType.MakeGenericType(elementType);
+            return Activator.CreateInstance(constructedListType);
         }
 
         private string createAssetName(int rowIndex)
@@ -147,7 +202,8 @@ namespace KoheiUtils
             SkipNoKey = 1 << 0,
             EmptyCell = 1 << 1,
             ConvertFails = 1 << 2,
-            
+            JoinIndexMismatch = 1 << 3,
+            JoinNoReferenceRow = 1 << 4,
         }
 
         public ResultType CreateCsvAssetAt(int i)
@@ -168,7 +224,7 @@ namespace KoheiUtils
 
             // テーブルのみ作成する場合は ScriptableObject としてではなく
             // 通常のインスタンスとして作成する.
-            if (setting.tableGenerate && setting.onlyTableCreate)
+            if (setting.IsPureClass)
             {
                 data = Activator.CreateInstance(assetType);
             }
@@ -285,14 +341,38 @@ namespace KoheiUtils
                 info.SetValue(data, value);
             }
 
-            if (!setting.tableGenerate || !setting.onlyTableCreate)
+            if (!setting.IsPureClass)
             {
                 EditorUtility.SetDirty(data as UnityEngine.Object);
             }
-
             if (setting.tableGenerate)
             {
                 dataList.GetType().GetMethod("Add").Invoke(dataList, new object[] {data});
+            }
+            else if (setting.join)
+            {
+                object keyValue = data.GetType().GetField(setting.selfJoinKeyField).GetValue(data);
+                var findMethod = tableType.GetMethod(setting.targetFindMethodName);
+                object row = findMethod.Invoke(tableInstance, new[] { keyValue });
+
+                if (row == null)
+                {
+                    resultType |= ResultType.JoinNoReferenceRow;
+                    return resultType;
+                }
+                
+                object levels = levelListInfo.GetValue(row);
+                var addMethod = levels.GetType().GetMethod("Add");
+                addMethod.Invoke(levels, new[] { data });
+
+//                int currentCount = (int) levels.GetType().GetProperty("Count").GetValue(levels);
+//                int index = (int) data.GetType().GetField(setting.joinIndexField).GetValue(data);
+//
+//                if (currentCount - 1 != index)
+//                {
+//                    Debug.Log($"Join {keyValue} <- {index} (current: {currentCount})");
+//                    resultType &= ResultType.JoinIndexMismatch;
+//                }
             }
 
             result.createdRowCount++;

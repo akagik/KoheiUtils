@@ -243,16 +243,25 @@ namespace KoheiUtils
                     // 成果物参照まど.
                     // ------------------------------
                     {
-                        string mainOutputPath = CCLogic.GetMainOutputPath(s, settingPath);
-
-                        if (mainOutputPath != null)
+                        Object outputRef = null;
+                        
+                        if (s.join)
                         {
-                            Object outputRef = AssetDatabase.LoadAssetAtPath<Object>(mainOutputPath);
-
-                            EditorGUI.BeginDisabledGroup(true);
-                            EditorGUILayout.ObjectField(outputRef, typeof(Object), false, GUILayout.Width(100));
-                            EditorGUI.EndDisabledGroup();
+                            outputRef = s.targetTable;
                         }
+                        else
+                        {
+                            string mainOutputPath = CCLogic.GetMainOutputPath(s, settingPath);
+
+                            if (mainOutputPath != null)
+                            {
+                                outputRef = AssetDatabase.LoadAssetAtPath<Object>(mainOutputPath);
+                            }
+                        }
+                        
+                        EditorGUI.BeginDisabledGroup(true);
+                        EditorGUILayout.ObjectField(outputRef, typeof(Object), false, GUILayout.Width(100));
+                        EditorGUI.EndDisabledGroup();
                     }
 
                     GUILayout.EndHorizontal();
