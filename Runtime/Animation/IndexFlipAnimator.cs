@@ -17,5 +17,10 @@ namespace KoheiUtils
 
             return controller.animations[key];
         }
+
+        public override bool HasAnimation(int index)
+        {
+            return 0 <= index && index < controller.animations.Length;
+        }
     }
 }

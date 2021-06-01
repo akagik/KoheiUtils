@@ -25,6 +25,22 @@ namespace KoheiUtils
         public int currentAnimIndex => _currentTrackEntry.animationIndex;
         bool       loop             => _currentTrackEntry.loop;
 
+        // ---------------------------------
+        // Virtual methods
+        // ---------------------------------
+        public virtual FlipAnimInfo GetFlipAnimInfo(int key)
+        {
+            return null;
+        }
+
+        public virtual bool HasAnimation(int index)
+        {
+            return false;
+        }
+
+        // ---------------------------------
+        // Public methods
+        // ---------------------------------
 #if ODIN_INSPECTOR
         [Sirenix.OdinInspector.FoldoutGroup("Methods", false)]
         [Sirenix.OdinInspector.Button]
@@ -44,14 +60,6 @@ namespace KoheiUtils
             {
                 PlayLoop(defaultLoopAnimationIndex, onComplete, onEnd);
             }
-        }
-
-        // ---------------------------------
-        // Virtual methods
-        // ---------------------------------
-        public virtual FlipAnimInfo GetFlipAnimInfo(int key)
-        {
-            return null;
         }
 
 #if ODIN_INSPECTOR

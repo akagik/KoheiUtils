@@ -11,6 +11,11 @@ namespace KoheiUtils
             return key2index.Get(key);
         }
         
+        public override bool HasAnimation(int index)
+        {
+            return key2index.ContainsKey(index);
+        }
+        
 #if ODIN_INSPECTOR
         [Sirenix.OdinInspector.FoldoutGroup("Methods", false)]
         [Sirenix.OdinInspector.Button]
