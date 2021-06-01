@@ -15,7 +15,7 @@ namespace KoheiUtils
         [Sirenix.OdinInspector.FoldoutGroup("Methods", false)]
         [Sirenix.OdinInspector.Button]
 #endif
-        public void AddAnimation(int newKey, FlipAnimInfo info)
+        public void AddNewAnimation(int newKey, FlipAnimInfo info)
         {
             key2index[newKey] = info;
         }

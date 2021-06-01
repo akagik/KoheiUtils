@@ -14,24 +14,16 @@ namespace KoheiUtils
             get => animation.onEventTriggered;
             set => animation.onEventTriggered = value;
         }
-        
-        /// <summary>
-        /// アニメーションが完了したときに呼び出される.
-        /// </summary>
-        private Action onComplete;
-        
-        /// <summary>
-        /// アニメーションが終了したときに呼び出される.
-        /// 途中で中断しても呼び出される.
-        /// </summary>
-        private Action onEnd;
 
         // -1 のときは、単発アニメーションを再生しても、デフォルトループに戻らない.
-        private int       defaultLoopAnimationIndex = 0;
-        private List<int> animationStacks           = new List<int>();
+        private int              defaultLoopAnimationIndex = 0;
+        private List<TrackEntry> animationStacks           = new List<TrackEntry>();
 
-        public  int  currentAnimIndex { get; private set; } = -1;
-        private bool loop;
+        TrackEntry        _currentTrackEntry = new TrackEntry {animationIndex = -1};
+        public TrackEntry currentTrackEntry => _currentTrackEntry;
+
+        public int currentAnimIndex => _currentTrackEntry.animationIndex;
+        bool       loop             => _currentTrackEntry.loop;
 
 #if ODIN_INSPECTOR
         [Sirenix.OdinInspector.FoldoutGroup("Methods", false)]
@@ -61,27 +53,54 @@ namespace KoheiUtils
         {
             return null;
         }
+
+#if ODIN_INSPECTOR
+        [Sirenix.OdinInspector.FoldoutGroup("Methods")]
+        [Sirenix.OdinInspector.Button]
+#endif
+        public void Play(TrackEntry entry)
+        {
+            var info = GetFlipAnimInfo(entry.animationIndex);
+
+            if (!ReferenceEquals(info, null))
+            {
+                // １つ前のエントリーの onEnd を先に呼び出しておく.
+                _currentTrackEntry.onEnd?.Invoke();
+
+                _currentTrackEntry = entry;
+
+                animation.Set(info);
+                animation.SetLoopCount(entry.loop ? -1 : 1);
+                animation.Play();
+            }
+            else
+            {
+                Debug.LogWarning("指定のアニメーション index は存在しない: " + entry.animationIndex);
+            }
+        }
         
 #if ODIN_INSPECTOR
         [Sirenix.OdinInspector.FoldoutGroup("Methods")]
         [Sirenix.OdinInspector.Button]
 #endif
-        public void PlayLoop(int animationIndex, Action onComplete = null, Action onEnd = null)
+        public void Play(int animationIndex, bool loop = false, Action onComplete = null, Action onEnd = null)
         {
             var info = GetFlipAnimInfo(animationIndex);
 
             if (!ReferenceEquals(info, null))
             {
-                this.onComplete = onComplete;
-                this.onEnd?.Invoke();
-                this.onEnd = onEnd;
-                
-                animation.Set(info);
-                animation.SetLoopCount(-1);
-                animation.Play();
+                // １つ前のエントリーの onEnd を先に呼び出しておく.
+                _currentTrackEntry.onEnd?.Invoke();
 
-                currentAnimIndex = animationIndex;
-                loop             = true;
+                _currentTrackEntry                = new TrackEntry();
+                _currentTrackEntry.animationIndex = animationIndex;
+                _currentTrackEntry.loop           = loop;
+                _currentTrackEntry.onEnd          = onEnd;
+                _currentTrackEntry.onCompleted    = onComplete;
+
+                animation.Set(info);
+                animation.SetLoopCount(loop ? -1 : 1);
+                animation.Play();
             }
             else
             {
@@ -93,27 +112,9 @@ namespace KoheiUtils
         [Sirenix.OdinInspector.FoldoutGroup("Methods")]
         [Sirenix.OdinInspector.Button]
 #endif
-        public void Play(int animationIndex, Action onComplete = null, Action onEnd = null)
+        public void PlayLoop(int animationIndex, Action onComplete = null, Action onEnd = null)
         {
-            var info = GetFlipAnimInfo(animationIndex);
-
-            if (!ReferenceEquals(info, null))
-            {
-                this.onComplete = onComplete;
-                this.onEnd?.Invoke();
-                this.onEnd = onEnd;
-                
-                animation.Set(info);
-                animation.SetLoopCount(1);
-                animation.Play();
-
-                currentAnimIndex = animationIndex;
-                loop             = false;
-            }
-            else
-            {
-                Debug.LogWarning("指定のアニメーション index は存在しない: " + animationIndex);
-            }
+            Play(animationIndex, loop, onComplete, onEnd);
         }
 
 #if ODIN_INSPECTOR
@@ -123,15 +124,26 @@ namespace KoheiUtils
         /// <summary>
         /// 現在再生中のアニメーションの次に再生するアニメーションを予約する.
         /// </summary>
-        public void AddAnimation(int newIndex)
+        public void AddAnimation(int newIndex, bool loop = false, Action onComplete = null, Action onEnd = null)
         {
-            animationStacks.Add(newIndex);
+            var addedEntry = new TrackEntry();
+            addedEntry.animationIndex = newIndex;
+            addedEntry.loop           = false;
+            addedEntry.onEnd          = onEnd;
+            addedEntry.onCompleted    = onComplete;
+
+            animationStacks.Add(addedEntry);
 
             // 現在ループアニメーション再生中の場合は即座にチェックする.
             if (loop)
             {
                 CheckStacks();
             }
+        }
+
+        public void ClearStacks()
+        {
+            animationStacks.Clear();
         }
 
         private bool CheckStacks()
@@ -163,17 +175,20 @@ namespace KoheiUtils
 
         void Update()
         {
-            if (animation.OnUpdate() && !loop)
+            if (animation.OnUpdate())
             {
-                onComplete?.Invoke();
-                onComplete = null;
+                _currentTrackEntry.onCompleted?.Invoke();
                 
-                onEnd?.Invoke();
-                onEnd = null;
-
-                if (!CheckStacks())
+                if (!loop)
                 {
-                    PlayDefault();
+                    // NOTE: OnEnd について1回コールされると、2度コールされないようにする.
+                    _currentTrackEntry.onEnd?.Invoke();
+                    _currentTrackEntry.onEnd = null;
+
+                    if (!CheckStacks())
+                    {
+                        PlayDefault();
+                    }
                 }
             }
         }
@@ -185,7 +200,7 @@ namespace KoheiUtils
         {
             get
             {
-                if (_animation == null)
+                if (ReferenceEquals(_animation, null))
                 {
                     _animation = GetComponent<FlipAnimation>();
                 }
