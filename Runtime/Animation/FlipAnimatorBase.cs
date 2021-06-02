@@ -122,7 +122,7 @@ namespace KoheiUtils
 #endif
         public void PlayLoop(int animationIndex, Action onComplete = null, Action onEnd = null)
         {
-            Play(animationIndex, loop, onComplete, onEnd);
+            Play(animationIndex, true, onComplete, onEnd);
         }
 
 #if ODIN_INSPECTOR

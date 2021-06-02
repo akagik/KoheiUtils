@@ -1,6 +1,9 @@
 # Changelog
 All notable changes to this package will be documented in this file. The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
 
+## [0.1.5] - 2021-06-02
+- Fix FlipAnimator loop logic miss
+
 ## [0.1.4] - 2021-06-01
 - FlipAnimator HasAnimation added
 - FlipAnimator TrackEntry impl
