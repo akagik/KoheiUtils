@@ -1,4 +1,6 @@
 ﻿using System;
+using KoheiUtils;
+using NUnit.Framework;
 
 namespace KoheiUtils.Tests
 {
@@ -50,6 +52,47 @@ namespace KoheiUtils.Tests
             Assert.AreEqual(state, fsm.currentState);
         }
 
+        [Test]
+        public void Test_TransitionWithParams()
+        {
+            int          order = 0;
+            StateMachine fsm   = new StateMachine();
+            A            a     = new A();
+            B            b     = new B();
+
+            fsm.RegisterState(a);
+            fsm.RegisterState(b);
+
+            fsm.Transition(a);
+            
+            // A -> B(34)
+            b.OnEnterFunc = (input) =>
+            {
+                // 
+                Assert.AreEqual(34, (int) input);
+            };
+
+            fsm.Transition(b, 34);
+            
+            // B -> B(21)
+            b.OnEnterFunc = (input) =>
+            {
+                // 
+                Assert.AreEqual(21, (int) input);
+            };
+
+            fsm.Transition(b, 21);
+            
+            // B -> B(null)
+            b.OnEnterFunc = (input) =>
+            {
+                // 
+                Assert.AreEqual(100, (int) b.value);
+            };
+
+            fsm.Transition(b);
+        }
+
         // イベントメソッドの呼び出し順
         [Test]
         public void Test_EventFuncCallOrder()
@@ -62,26 +105,37 @@ namespace KoheiUtils.Tests
             fsm.RegisterState(stateA);
             fsm.RegisterState(stateB);
 
-            fsm.Transition(stateA);
-
-            stateA.OnExitFunc = () =>
+            stateA.InitializeParamsFunc = () =>
             {
                 Assert.AreEqual(0, order);
                 order++;
             };
 
-            stateA.InitializeParamsFunc = () =>
+            stateA.OnEnterFunc = (input) =>
             {
                 Assert.AreEqual(1, order);
                 order++;
             };
 
-            stateB.OnEnterFunc = () =>
+            stateA.OnExitFunc = () =>
             {
                 Assert.AreEqual(2, order);
                 order++;
             };
 
+            stateB.InitializeParamsFunc = () =>
+            {
+                Assert.AreEqual(3, order);
+                order++;
+            };
+
+            stateB.OnEnterFunc = (input) =>
+            {
+                Assert.AreEqual(4, order);
+                order++;
+            };
+
+            fsm.Transition(stateA);
             Assert.AreEqual(stateA, fsm.currentState);
             fsm.Transition(stateB);
             Assert.AreEqual(stateB, fsm.currentState);
@@ -113,19 +167,19 @@ namespace KoheiUtils.Tests
                 fsm.Transition(b2);
             };
 
-            stateA.InitializeParamsFunc = () =>
-            {
-                Assert.AreEqual(1, order);
-                order++;
-            };
-
-            b1.OnEnterFunc = () =>
+            b1.OnEnterFunc = (input) =>
             {
                 // b1 には移行しない.
                 Assert.Fail();
             };
 
-            b2.OnEnterFunc = () =>
+            b2.InitializeParamsFunc = () =>
+            {
+                Assert.AreEqual(1, order);
+                order++;
+            };
+
+            b2.OnEnterFunc = (input) =>
             {
                 // b1 の代わりに b2 に移行する
                 Assert.AreEqual(2, order);
@@ -150,9 +204,6 @@ namespace KoheiUtils.Tests
             fsm.RegisterState(a);
             fsm.RegisterState(b);
 
-            // 登録直後は初期状態
-            Assert.AreEqual(100, b.a);
-
             fsm.Transition(a);
 
             a.OnExitFunc = () =>
@@ -161,43 +212,28 @@ namespace KoheiUtils.Tests
                 order++;
             };
 
-            a.InitializeParamsFunc = () =>
+            b.InitializeParamsFunc = () =>
             {
                 Assert.AreEqual(1, order);
                 order++;
             };
 
-            b.OnEnterFunc = () =>
+            b.OnEnterFunc = (input) =>
             {
-                Assert.AreEqual(3, order);
-                Assert.AreEqual(5, b.a);
+                Assert.AreEqual(2, order);
+                Assert.AreEqual(5, b.value);
                 order++;
             };
 
             Assert.AreEqual(a, fsm.currentState);
 
-            if (fsm.BeginTransition())
-            {
-                Assert.AreEqual(2, order);
-                order++;
+            fsm.Transition(b, 5);
+            Assert.AreEqual(5, b.value);
 
-                // この段階ではまだ遷移は完了しない.
-                Assert.AreEqual(a, fsm.currentState);
-                Assert.IsTrue(fsm.isStateChanging);
+            Assert.AreEqual(b, fsm.currentState);
+            Assert.AreEqual(a, fsm.previousState);
 
-                Assert.AreEqual(100, b.a);
-                b.a = 5;
-                Assert.AreEqual(5, b.a);
-
-                fsm.EndTransition(b);
-
-                Assert.AreEqual(b, fsm.currentState);
-                Assert.AreEqual(a, fsm.previousState);
-                Assert.AreEqual(5, b.a);
-
-                Assert.AreEqual(4, order);
-                order++;
-            }
+            Assert.AreEqual(3, order);
         }
 
         // パラメータあり遷移の Exit にて 遷移発生
@@ -214,10 +250,6 @@ namespace KoheiUtils.Tests
             fsm.RegisterState(b1);
             fsm.RegisterState(b2);
 
-            // 登録直後は初期状態
-            Assert.AreEqual(100, b1.a);
-            Assert.AreEqual(100, b2.a);
-
             fsm.Transition(a);
 
             a.OnExitFunc = () =>
@@ -228,15 +260,16 @@ namespace KoheiUtils.Tests
                 fsm.Transition(b2);
             };
 
-            a.InitializeParamsFunc = () =>
+            b1.OnEnterFunc = (input) => { Assert.Fail(); };
+
+            b2.InitializeParamsFunc = () =>
             {
                 Assert.AreEqual(1, order);
                 order++;
             };
 
-            b1.OnEnterFunc = () => { Assert.Fail(); };
 
-            b2.OnEnterFunc = () =>
+            b2.OnEnterFunc = (input) =>
             {
                 Assert.AreEqual(2, order);
                 order++;
@@ -244,18 +277,12 @@ namespace KoheiUtils.Tests
 
             Assert.AreEqual(a, fsm.currentState);
 
-            if (fsm.BeginTransition())
-            {
-                Assert.Fail();
-            }
-            else
-            {
-                Assert.AreEqual(3, order);
-                order++;
+            // a -> b1 に遷移
+            fsm.Transition(b1);
 
-                Assert.AreEqual(b2, fsm.currentState);
-                Assert.AreEqual(a, fsm.previousState);
-            }
+            Assert.AreEqual(3, order);
+            Assert.AreEqual(b2, fsm.currentState);
+            Assert.AreEqual(a, fsm.previousState);
         }
 
         // パラメータあり遷移の Exit にて パラメータあり遷移発生
@@ -272,275 +299,115 @@ namespace KoheiUtils.Tests
             fsm.RegisterState(b1);
             fsm.RegisterState(b2);
 
-            // 登録直後は初期状態
-            Assert.AreEqual(100, b1.a);
-            Assert.AreEqual(100, b2.a);
-
-            fsm.Transition(a);
-
-            a.OnExitFunc = () =>
-            {
-                Assert.AreEqual(0, order);
-                order++;
-
-                Assert.IsTrue(fsm.isStateChanging);
-
-                if (fsm.BeginTransition())
-                {
-                    Assert.AreEqual(2, order);
-                    order++;
-
-                    b2.a = 15;
-
-                    fsm.EndTransition(b2);
-
-                    Assert.AreEqual(4, order);
-                    order++;
-                }
-                else
-                {
-                    Assert.Fail();
-                }
-            };
 
             a.InitializeParamsFunc = () =>
             {
-                Assert.AreEqual(1, order);
+                Assert.AreEqual(0, order);
                 order++;
             };
 
-            b1.OnEnterFunc = () => { Assert.Fail(); };
+            a.OnExitFunc = () =>
+            {
+                Assert.AreEqual(1, order);
+                order++;
 
-            b2.OnEnterFunc = () =>
+                Assert.IsTrue(fsm.duringTransition);
+
+                order++;
+                fsm.Transition(b2, 15);
+                order++;
+            };
+
+            b1.OnEnterFunc = (input) => { Assert.Fail(); };
+
+            b2.OnEnterFunc = (input) =>
             {
                 Assert.AreEqual(3, order);
                 order++;
 
-                Assert.AreEqual(15, b2.a);
+                Assert.AreEqual(15, b2.value);
             };
+
+            fsm.Transition(a);
 
             Assert.AreEqual(a, fsm.currentState);
 
-            if (fsm.BeginTransition())
-            {
-                Assert.Fail();
-            }
-            else
-            {
-                Assert.AreEqual(5, order);
-                order++;
-
-                Assert.AreEqual(b2, fsm.currentState);
-                Assert.AreEqual(a, fsm.previousState);
-            }
+            fsm.Transition(b1, 5);
+            Assert.AreEqual(5, order);
+            order++;
+            Assert.AreEqual(b2, fsm.currentState);
+            Assert.AreEqual(a, fsm.previousState);
         }
 
         // パラメータ初期化チェック
         [Test]
         public void Test_InitializeParams()
         {
-            int          order = 0;
-            StateMachine fsm   = new StateMachine();
-            A            a     = new A();
-            B            b1    = new B();
-            B            b2    = new B();
+            StateMachine fsm = new StateMachine();
+            A            a   = new A();
+            B            b1  = new B();
+            B            b2  = new B();
 
             fsm.RegisterState(a);
             fsm.RegisterState(b1);
             fsm.RegisterState(b2);
 
-            // 登録直後は初期状態
-            Assert.AreEqual(100, b1.a);
-            Assert.AreEqual(100, b2.a);
-
             fsm.Transition(a);
-
-            a.OnExitFunc = () =>
-            {
-                Assert.AreEqual(0, order);
-                order++;
-            };
-
-            a.InitializeParamsFunc = () =>
-            {
-                Assert.AreEqual(1, order);
-                order++;
-            };
-
-            b1.OnEnterFunc = () =>
-            {
-                Assert.AreEqual(2, order);
-                order++;
-
-                Assert.AreEqual(5, b1.a);
-            };
-
-            b1.OnExitFunc = () =>
-            {
-                Assert.AreEqual(3, order);
-                order++;
-
-                Assert.AreEqual(5, b1.a);
-            };
-
-            b1.InitializeParamsFunc = () =>
-            {
-                Assert.AreEqual(4, order);
-                order++;
-            };
-
-            b2.OnEnterFunc = () =>
-            {
-                Assert.AreEqual(5, order);
-                order++;
-
-                Assert.AreEqual(20, b2.a);
-            };
 
             Assert.AreEqual(a, fsm.currentState);
 
             // A -> B1 (5)
-            if (fsm.BeginTransition())
-            {
-                b1.a = 5;
-                fsm.EndTransition(b1);
-            }
-            else
-            {
-                Assert.Fail();
-            }
+            fsm.Transition(b1, 5);
 
-            Assert.AreEqual(5, b1.a);
+            Assert.AreEqual(5, b1.value);
 
             // B1 -> B2 (20)
-            if (fsm.BeginTransition())
-            {
-                Assert.AreEqual(100, b1.a);
+            fsm.Transition(b2, 20);
 
-                b2.a = 20;
-                fsm.EndTransition(b2);
-
-                Assert.AreEqual(6, order);
-                order++;
-            }
-            else
-            {
-                Assert.Fail();
-            }
+            Assert.AreEqual(20, b2.value);
 
             // B2 -> A
             fsm.Transition(a);
-            Assert.AreEqual(100, b2.a);
         }
 
         // 自己遷移
         [Test]
         public void Test_ChangeToSelf()
         {
-            int          order = 0;
-            StateMachine fsm   = new StateMachine();
-            A            a     = new A();
+            StateMachine fsm = new StateMachine();
+            A            a   = new A();
 
             fsm.RegisterState(a);
-
-            a.OnEnterFunc = () =>
-            {
-                Assert.AreEqual(0, order);
-                order++;
-            };
-
-            a.OnExitFunc = () =>
-            {
-                Assert.AreEqual(1, order);
-                order++;
-            };
-
-            a.InitializeParamsFunc = () =>
-            {
-                Assert.AreEqual(2, order);
-                order++;
-            };
 
             // Entry -> A
             fsm.Transition(a);
             Assert.AreEqual(a, fsm.currentState);
 
-            a.OnEnterFunc = () =>
-            {
-                Assert.AreEqual(3, order);
-                order++;
-            };
-
             // A -> A
             fsm.Transition(a);
+            Assert.AreEqual(a, fsm.previousState);
             Assert.AreEqual(a, fsm.currentState);
-
-            Assert.AreEqual(4, order);
-            order++;
         }
 
         // パラメータ付き自己遷移
         [Test]
         public void Test_ChangeToSelfWithParams()
         {
-            int          order = 0;
-            StateMachine fsm   = new StateMachine();
-            B            b     = new B();
-
+            StateMachine fsm = new StateMachine();
+            B            b   = new B();
             fsm.RegisterState(b);
 
-            b.OnEnterFunc = () =>
-            {
-                Assert.AreEqual(0, order);
-                order++;
-
-                Assert.AreEqual(10, b.a);
-            };
-
-            b.OnExitFunc = () =>
-            {
-                Assert.AreEqual(1, order);
-                order++;
-
-                Assert.AreEqual(10, b.a);
-            };
-
-            b.InitializeParamsFunc = () =>
-            {
-                Assert.AreEqual(2, order);
-                order++;
-            };
-
             // Entry -> B
-            if (fsm.BeginTransition())
-            {
-                b.a = 10;
-                fsm.EndTransition(b);
-            }
+            fsm.Transition(b);
 
-            Assert.AreEqual(b, fsm.currentState);
-            Assert.AreEqual(10, b.a);
-
-            b.OnEnterFunc = () =>
-            {
-                Assert.AreEqual(3, order);
-                order++;
-
-                Assert.AreEqual(20, b.a);
-            };
+            // パラメータを渡さない場合は初期状態になる.
+            Assert.AreEqual(100, b.value);
 
             // B -> B
-            if (fsm.BeginTransition())
-            {
-                b.a = 20;
-                fsm.EndTransition(b);
-            }
+            fsm.Transition(b, 20);
 
             Assert.AreEqual(b, fsm.currentState);
-            Assert.AreEqual(20, b.a);
-
-            Assert.AreEqual(4, order);
-            order++;
+            Assert.AreEqual(20, b.value);
         }
 
         // ステートマシンの入れ子
@@ -552,9 +419,9 @@ namespace KoheiUtils.Tests
             StateMachine fsm  = new StateMachine();
             M            sub1 = new M();
             M            sub2 = new M();
-            
-            B            sub1b    = new B();
-            B            sub2b    = new B();
+
+            B sub1b = new B();
+            B sub2b = new B();
 
             fsm.RegisterState(sub1);
             fsm.RegisterState(sub2);
@@ -563,33 +430,33 @@ namespace KoheiUtils.Tests
             sub2.RegisterState(sub2b);
 
             Assert.AreEqual(fsm.entryState, fsm.currentState);
-            
+
             // Entry -> sub1
             fsm.Transition(sub1);
-            
+
             Assert.AreEqual(sub1, fsm.currentState);
             Assert.AreEqual(sub1.entryState, (fsm.currentState as StateMachine).currentState);
-            
+
             sub1.Transition(sub1b);
-            
+
             Assert.AreEqual(sub1, fsm.currentState);
             Assert.AreEqual(sub1b, (fsm.currentState as StateMachine).currentState);
         }
 
         class A : State
         {
-            public Action InitializeParamsFunc;
-            public Action OnEnterFunc;
-            public Action OnExitFunc;
+            public Action         InitializeParamsFunc;
+            public Action<object> OnEnterFunc;
+            public Action         OnExitFunc;
 
             public override void InitializeParams()
             {
                 InitializeParamsFunc?.Invoke();
             }
 
-            protected override void OnEnterInner()
+            protected override void OnEnterInner(object input)
             {
-                OnEnterFunc?.Invoke();
+                OnEnterFunc?.Invoke(input);
             }
 
             protected override void OnExitInner()
@@ -600,21 +467,26 @@ namespace KoheiUtils.Tests
 
         class B : State
         {
-            public int a;
+            public int value;
 
-            public Action InitializeParamsFunc;
-            public Action OnEnterFunc;
-            public Action OnExitFunc;
+            public Action         InitializeParamsFunc;
+            public Action<object> OnEnterFunc;
+            public Action         OnExitFunc;
 
             public override void InitializeParams()
             {
-                a = 100;
+                value = 100;
                 InitializeParamsFunc?.Invoke();
             }
 
-            protected override void OnEnterInner()
+            protected override void OnEnterInner(object input)
             {
-                OnEnterFunc?.Invoke();
+                if (input != null)
+                {
+                    this.value = (int) input;
+                }
+
+                OnEnterFunc?.Invoke(input);
             }
 
             protected override void OnExitInner()

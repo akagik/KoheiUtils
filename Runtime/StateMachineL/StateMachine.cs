@@ -5,22 +5,28 @@
 
     public class StateMachine : State
     {
-        private Dictionary<int, State> id2State;
+        public State currentState  { get; protected set; }
+        public State previousState { get; protected set; }
 
         // 初期ステート. currentState は常に null 以外の値を入れるために導入.
         public State entryState { get; private set; }
 
-        private int   registeredMaxStateId = -1;
-        public  State currentState;
-        public  State previousState;
-        private bool  callingExit;
-        private bool  onExitChanging; // OnExit 内で遷移があったかどうか？
+        public bool duringTransition { get; private set; }
 
-        public bool isStateChanging { get; private set; }
+        private Dictionary<int, State> id2State;
 
+        private int  registeredMaxStateId = -1;
+        private bool innerTransition; // OnExit 内で遷移があったかどうか？
+
+        // ----------------------------------------------
+        // Properties
+        // ----------------------------------------------
+
+        public Dictionary<int, State>.KeyCollection Keys => id2State.Keys;
+    
         public int currentStateId => currentState.stateId;
+        public int sizeOfStates   => id2State.Count;
 
-        public int sizeOfStates => id2State.Count;
 
         public StateMachine()
         {
@@ -36,10 +42,9 @@
 
         public int RegisterState(State newState)
         {
-            registeredMaxStateId += 1;
-            newState.stateId     =  registeredMaxStateId;
-            newState.InitializeParams();
-            newState.masterStateMachine = this;
+            registeredMaxStateId        += 1;
+            newState.stateId            =  registeredMaxStateId;
+            newState.masterStateMachine =  this;
 
             id2State.Add(registeredMaxStateId, newState);
             return registeredMaxStateId;
@@ -47,9 +52,8 @@
 
         public int RegisterState(int stateId, State newState)
         {
-            registeredMaxStateId = stateId;
-            newState.stateId     = registeredMaxStateId;
-            newState.InitializeParams();
+            registeredMaxStateId        = stateId;
+            newState.stateId            = registeredMaxStateId;
             newState.masterStateMachine = this;
 
             if (id2State.ContainsKey(stateId))
@@ -66,12 +70,20 @@
             id2State.Remove(stateId);
         }
 
+        public void ClearState()
+        {
+            id2State.Clear();
+        }
+
         public State GetState(int stateId)
         {
             return id2State[stateId];
         }
 
-        public Dictionary<int, State>.KeyCollection Keys => id2State.Keys;
+        public T GetState<T>(int stateId) where T : State
+        {
+            return id2State[stateId] as T;
+        }
 
         public void Transition(int newStateId)
         {
@@ -88,105 +100,40 @@
         /// <summary>
         /// パラメータなし遷移
         /// </summary>
-        public void Transition(State next)
+        public void Transition(State next, object input = null)
         {
-//            Debug.Log($"ChangeState: {currentStateId}->{next.stateId}");
+            if (verbose)
+            {
+                Debug.Log($"Transition: {currentStateId}->{next.stateId} (input: {input})");
+            }
 
             // すでにステート遷移中の場合は OnExit をスキップする.
-            if (isStateChanging)
+            if (duringTransition)
             {
-                // 基本的に遷移中に遷移が起こるのは、OnExit のタイミングだけだが、それ以外で
-                // 遷移が発生した場合は例外として処理する.
-                if (!callingExit)
-                {
-                    Debug.LogError("遷移中の不正な遷移が発生");
-                    return;
-                }
+                innerTransition = true;
 
-                onExitChanging = true;
-
-                this.currentState.InitializeParams();
+                next.InitializeParams();
+                next.OnEnter(input);
                 this.currentState = next;
-                this.currentState.OnEnter();
+
                 return;
             }
 
-            isStateChanging = true;
+            duringTransition = true;
+            previousState    = currentState;
 
-            previousState = currentState;
-
-            callingExit = true;
             currentState.OnExit();
-            callingExit = false;
 
-            if (!onExitChanging)
+            if (!innerTransition)
             {
-                this.currentState.InitializeParams();
-                this.currentState = next;
-                this.currentState.OnEnter();
+                next.InitializeParams();
+                next.OnEnter(input);
+
+                currentState = next;
             }
 
-            onExitChanging  = false;
-            isStateChanging = false;
-        }
-
-        /// <summary>
-        /// 現在の遷移を抜けたときに、さらに遷移が発生した場合は true を返す.
-        /// ChangeStateBegin メソッドは、ステート先にパラメータを渡すときに利用する.
-        /// 流れとしては以下のような感じになる:
-        ///
-        /// 1. ChagneStateBegin 呼び出し
-        /// ↓
-        /// 2. ステート遷移先にパラメータをセット
-        /// ↓
-        /// 3. ChangeStateEnd 呼び出し
-        /// 
-        /// </summary>
-        public bool BeginTransition()
-        {
-//            Debug.Log($"ChangeStateBegin: From {currentState.stateId}");
-
-            // すでにステート遷移中の場合は OnExit をスキップする.
-            // 基本的に遷移中に遷移が起こるのは、OnExit のタイミングだけ.
-            if (isStateChanging)
-            {
-                if (!callingExit)
-                {
-                    Debug.LogError("遷移中の不正な遷移が発生");
-                    return false;
-                }
-
-                onExitChanging = true;
-                this.currentState.InitializeParams();
-                return true;
-            }
-
-            isStateChanging = true;
-            previousState   = currentState;
-
-            callingExit = true;
-            currentState.OnExit();
-            callingExit = false;
-
-            if (onExitChanging)
-            {
-                onExitChanging  = false;
-                isStateChanging = false;
-                return false;
-            }
-
-            this.currentState.InitializeParams();
-            return true;
-        }
-
-        public void EndTransition(State newState)
-        {
-//            Debug.Log($"ChangeStateEnd: To {newState.stateId}");
-
-            this.currentState = newState;
-            this.currentState.OnEnter();
-
-            isStateChanging = false;
+            innerTransition  = false;
+            duringTransition = false;
         }
 
         public override void OnUpdate()
@@ -194,14 +141,19 @@
             currentState.OnUpdate();
         }
 
-        protected override void OnEnterInner()
+        protected override void OnEnterInner(object input)
         {
-            currentState.OnEnter();
+            currentState.OnEnter(input);
         }
 
         protected override void OnExitInner()
         {
             currentState.OnExit();
         }
+
+        // ----------------------------------------------
+        // For Debug
+        // ----------------------------------------------
+        public bool verbose;
     }
 }
