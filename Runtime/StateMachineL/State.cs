@@ -33,27 +33,27 @@
         /// ステートに入ったときに呼び出される.
         /// OnEnter 中にステート遷移した場合は、OnExit は呼び出されない点に注意.
         /// </summary>
-        public void OnEnter(object input)
+        public void OnEnterFirst(object input)
         {
             enterTime = Time.time;
-            OnEnterInner(input);
+            OnEnter(input);
         }
         
         public virtual void OnUpdate()
         {
         }
 
-        public void OnExit()
+        public void OnExitFirst()
         {
             previousExitTime = Time.time;
-            OnExitInner();
+            OnExit();
         }
 
-        protected virtual void OnEnterInner(object input)
+        protected virtual void OnEnter(object input)
         {
         }
 
-        protected virtual void OnExitInner()
+        protected virtual void OnExit()
         {
         }
     }

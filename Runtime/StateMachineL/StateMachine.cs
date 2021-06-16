@@ -113,7 +113,7 @@
                 innerTransition = true;
 
                 next.InitializeParams();
-                next.OnEnter(input);
+                next.OnEnterFirst(input);
                 this.currentState = next;
 
                 return;
@@ -122,12 +122,12 @@
             duringTransition = true;
             previousState    = currentState;
 
-            currentState.OnExit();
+            currentState.OnExitFirst();
 
             if (!innerTransition)
             {
                 next.InitializeParams();
-                next.OnEnter(input);
+                next.OnEnterFirst(input);
 
                 currentState = next;
             }
@@ -141,14 +141,14 @@
             currentState.OnUpdate();
         }
 
-        protected override void OnEnterInner(object input)
+        protected override void OnEnter(object input)
         {
-            currentState.OnEnter(input);
+            currentState.OnEnterFirst(input);
         }
 
-        protected override void OnExitInner()
+        protected override void OnExit()
         {
-            currentState.OnExit();
+            currentState.OnExitFirst();
         }
 
         // ----------------------------------------------

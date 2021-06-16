@@ -454,12 +454,12 @@ namespace KoheiUtils.Tests
                 InitializeParamsFunc?.Invoke();
             }
 
-            protected override void OnEnterInner(object input)
+            protected override void OnEnter(object input)
             {
                 OnEnterFunc?.Invoke(input);
             }
 
-            protected override void OnExitInner()
+            protected override void OnExit()
             {
                 OnExitFunc?.Invoke();
             }
@@ -479,7 +479,7 @@ namespace KoheiUtils.Tests
                 InitializeParamsFunc?.Invoke();
             }
 
-            protected override void OnEnterInner(object input)
+            protected override void OnEnter(object input)
             {
                 if (input != null)
                 {
@@ -489,7 +489,7 @@ namespace KoheiUtils.Tests
                 OnEnterFunc?.Invoke(input);
             }
 
-            protected override void OnExitInner()
+            protected override void OnExit()
             {
                 OnExitFunc?.Invoke();
             }
