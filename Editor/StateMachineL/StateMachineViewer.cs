@@ -199,7 +199,7 @@
         [Sirenix.OdinInspector.Button]
         public void ChangeState(int stateId)
         {
-            fsm.ChangeStateWithoutParam(stateId);
+            fsm.Transition(stateId);
         }
 #endif
     }

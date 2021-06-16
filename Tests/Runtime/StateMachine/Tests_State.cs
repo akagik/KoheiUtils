@@ -46,7 +46,7 @@ namespace KoheiUtils.Tests
             // ステートの追加
             int stateId = fsm.RegisterState(state);
 
-            fsm.ChangeStateWithoutParam(state);
+            fsm.Transition(state);
             Assert.AreEqual(state, fsm.currentState);
         }
 
@@ -62,7 +62,7 @@ namespace KoheiUtils.Tests
             fsm.RegisterState(stateA);
             fsm.RegisterState(stateB);
 
-            fsm.ChangeStateWithoutParam(stateA);
+            fsm.Transition(stateA);
 
             stateA.OnExitFunc = () =>
             {
@@ -83,7 +83,7 @@ namespace KoheiUtils.Tests
             };
 
             Assert.AreEqual(stateA, fsm.currentState);
-            fsm.ChangeStateWithoutParam(stateB);
+            fsm.Transition(stateB);
             Assert.AreEqual(stateB, fsm.currentState);
             Assert.AreEqual(stateA, fsm.previousState);
         }
@@ -102,7 +102,7 @@ namespace KoheiUtils.Tests
             fsm.RegisterState(b1);
             fsm.RegisterState(b2);
 
-            fsm.ChangeStateWithoutParam(stateA);
+            fsm.Transition(stateA);
 
             stateA.OnExitFunc = () =>
             {
@@ -110,7 +110,7 @@ namespace KoheiUtils.Tests
                 order++;
 
                 // A から抜けるときに entry に移行するようにする.
-                fsm.ChangeStateWithoutParam(b2);
+                fsm.Transition(b2);
             };
 
             stateA.InitializeParamsFunc = () =>
@@ -133,7 +133,7 @@ namespace KoheiUtils.Tests
             };
 
             Assert.AreEqual(stateA, fsm.currentState);
-            fsm.ChangeStateWithoutParam(b1);
+            fsm.Transition(b1);
             Assert.AreEqual(b2, fsm.currentState);
             Assert.AreEqual(stateA, fsm.previousState);
         }
@@ -153,7 +153,7 @@ namespace KoheiUtils.Tests
             // 登録直後は初期状態
             Assert.AreEqual(100, b.a);
 
-            fsm.ChangeStateWithoutParam(a);
+            fsm.Transition(a);
 
             a.OnExitFunc = () =>
             {
@@ -176,7 +176,7 @@ namespace KoheiUtils.Tests
 
             Assert.AreEqual(a, fsm.currentState);
 
-            if (fsm.ChangeStateBegin())
+            if (fsm.BeginTransition())
             {
                 Assert.AreEqual(2, order);
                 order++;
@@ -189,7 +189,7 @@ namespace KoheiUtils.Tests
                 b.a = 5;
                 Assert.AreEqual(5, b.a);
 
-                fsm.ChangeStateEnd(b);
+                fsm.EndTransition(b);
 
                 Assert.AreEqual(b, fsm.currentState);
                 Assert.AreEqual(a, fsm.previousState);
@@ -218,14 +218,14 @@ namespace KoheiUtils.Tests
             Assert.AreEqual(100, b1.a);
             Assert.AreEqual(100, b2.a);
 
-            fsm.ChangeStateWithoutParam(a);
+            fsm.Transition(a);
 
             a.OnExitFunc = () =>
             {
                 Assert.AreEqual(0, order);
                 order++;
 
-                fsm.ChangeStateWithoutParam(b2);
+                fsm.Transition(b2);
             };
 
             a.InitializeParamsFunc = () =>
@@ -244,7 +244,7 @@ namespace KoheiUtils.Tests
 
             Assert.AreEqual(a, fsm.currentState);
 
-            if (fsm.ChangeStateBegin())
+            if (fsm.BeginTransition())
             {
                 Assert.Fail();
             }
@@ -276,7 +276,7 @@ namespace KoheiUtils.Tests
             Assert.AreEqual(100, b1.a);
             Assert.AreEqual(100, b2.a);
 
-            fsm.ChangeStateWithoutParam(a);
+            fsm.Transition(a);
 
             a.OnExitFunc = () =>
             {
@@ -285,14 +285,14 @@ namespace KoheiUtils.Tests
 
                 Assert.IsTrue(fsm.isStateChanging);
 
-                if (fsm.ChangeStateBegin())
+                if (fsm.BeginTransition())
                 {
                     Assert.AreEqual(2, order);
                     order++;
 
                     b2.a = 15;
 
-                    fsm.ChangeStateEnd(b2);
+                    fsm.EndTransition(b2);
 
                     Assert.AreEqual(4, order);
                     order++;
@@ -321,7 +321,7 @@ namespace KoheiUtils.Tests
 
             Assert.AreEqual(a, fsm.currentState);
 
-            if (fsm.ChangeStateBegin())
+            if (fsm.BeginTransition())
             {
                 Assert.Fail();
             }
@@ -353,7 +353,7 @@ namespace KoheiUtils.Tests
             Assert.AreEqual(100, b1.a);
             Assert.AreEqual(100, b2.a);
 
-            fsm.ChangeStateWithoutParam(a);
+            fsm.Transition(a);
 
             a.OnExitFunc = () =>
             {
@@ -400,10 +400,10 @@ namespace KoheiUtils.Tests
             Assert.AreEqual(a, fsm.currentState);
 
             // A -> B1 (5)
-            if (fsm.ChangeStateBegin())
+            if (fsm.BeginTransition())
             {
                 b1.a = 5;
-                fsm.ChangeStateEnd(b1);
+                fsm.EndTransition(b1);
             }
             else
             {
@@ -413,12 +413,12 @@ namespace KoheiUtils.Tests
             Assert.AreEqual(5, b1.a);
 
             // B1 -> B2 (20)
-            if (fsm.ChangeStateBegin())
+            if (fsm.BeginTransition())
             {
                 Assert.AreEqual(100, b1.a);
 
                 b2.a = 20;
-                fsm.ChangeStateEnd(b2);
+                fsm.EndTransition(b2);
 
                 Assert.AreEqual(6, order);
                 order++;
@@ -429,7 +429,7 @@ namespace KoheiUtils.Tests
             }
 
             // B2 -> A
-            fsm.ChangeStateWithoutParam(a);
+            fsm.Transition(a);
             Assert.AreEqual(100, b2.a);
         }
 
@@ -462,7 +462,7 @@ namespace KoheiUtils.Tests
             };
 
             // Entry -> A
-            fsm.ChangeStateWithoutParam(a);
+            fsm.Transition(a);
             Assert.AreEqual(a, fsm.currentState);
 
             a.OnEnterFunc = () =>
@@ -472,7 +472,7 @@ namespace KoheiUtils.Tests
             };
 
             // A -> A
-            fsm.ChangeStateWithoutParam(a);
+            fsm.Transition(a);
             Assert.AreEqual(a, fsm.currentState);
 
             Assert.AreEqual(4, order);
@@ -512,10 +512,10 @@ namespace KoheiUtils.Tests
             };
 
             // Entry -> B
-            if (fsm.ChangeStateBegin())
+            if (fsm.BeginTransition())
             {
                 b.a = 10;
-                fsm.ChangeStateEnd(b);
+                fsm.EndTransition(b);
             }
 
             Assert.AreEqual(b, fsm.currentState);
@@ -530,10 +530,10 @@ namespace KoheiUtils.Tests
             };
 
             // B -> B
-            if (fsm.ChangeStateBegin())
+            if (fsm.BeginTransition())
             {
                 b.a = 20;
-                fsm.ChangeStateEnd(b);
+                fsm.EndTransition(b);
             }
 
             Assert.AreEqual(b, fsm.currentState);
@@ -565,12 +565,12 @@ namespace KoheiUtils.Tests
             Assert.AreEqual(fsm.entryState, fsm.currentState);
             
             // Entry -> sub1
-            fsm.ChangeStateWithoutParam(sub1);
+            fsm.Transition(sub1);
             
             Assert.AreEqual(sub1, fsm.currentState);
             Assert.AreEqual(sub1.entryState, (fsm.currentState as StateMachine).currentState);
             
-            sub1.ChangeStateWithoutParam(sub1b);
+            sub1.Transition(sub1b);
             
             Assert.AreEqual(sub1, fsm.currentState);
             Assert.AreEqual(sub1b, (fsm.currentState as StateMachine).currentState);

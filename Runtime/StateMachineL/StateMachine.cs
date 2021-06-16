@@ -73,11 +73,11 @@
 
         public Dictionary<int, State>.KeyCollection Keys => id2State.Keys;
 
-        public void ChangeStateWithoutParam(int newStateId)
+        public void Transition(int newStateId)
         {
             if (id2State.TryGetValue(newStateId, out State newState))
             {
-                ChangeStateWithoutParam(newState);
+                Transition(newState);
             }
             else
             {
@@ -88,7 +88,7 @@
         /// <summary>
         /// パラメータなし遷移
         /// </summary>
-        public void ChangeStateWithoutParam(State next)
+        public void Transition(State next)
         {
 //            Debug.Log($"ChangeState: {currentStateId}->{next.stateId}");
 
@@ -142,7 +142,7 @@
         /// 3. ChangeStateEnd 呼び出し
         /// 
         /// </summary>
-        public bool ChangeStateBegin()
+        public bool BeginTransition()
         {
 //            Debug.Log($"ChangeStateBegin: From {currentState.stateId}");
 
@@ -179,7 +179,7 @@
             return true;
         }
 
-        public void ChangeStateEnd(State newState)
+        public void EndTransition(State newState)
         {
 //            Debug.Log($"ChangeStateEnd: To {newState.stateId}");
 
