@@ -1,6 +1,10 @@
 # Changelog
 All notable changes to this package will be documented in this file. The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
 
+## [0.1.6] - 2021-06-16
+- StateMachine.State のパラメータの渡し方を変更
+- StateMachine の各種メソッドの名前を変更
+
 ## [0.1.5] - 2021-06-02
 - Fix FlipAnimator loop logic miss
 
