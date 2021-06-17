@@ -1,6 +1,9 @@
 # Changelog
 All notable changes to this package will be documented in this file. The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
 
+## [0.1.8] - 2021-06-17
+- Play onEnd が先にコールされるようにした
+
 ## [0.1.7] - 2021-06-17
 - FlipAnimator の onEnd コール中の Play による無限ループを改善
 
