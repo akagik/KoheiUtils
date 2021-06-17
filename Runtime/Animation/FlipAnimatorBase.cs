@@ -73,13 +73,17 @@ namespace KoheiUtils
             if (!ReferenceEquals(info, null))
             {
                 // １つ前のエントリーの onEnd を先に呼び出しておく.
-                _currentTrackEntry.onEnd?.Invoke();
+                Action _onEnd = _currentTrackEntry.onEnd;
 
                 _currentTrackEntry = entry;
 
                 animation.Set(info);
                 animation.SetLoopCount(entry.loop ? -1 : 1);
                 animation.Play();
+                
+                // １つ前のエントリーの onEnd を最後に呼び出す.
+                // NOTE: 最初に呼び出すと、無限ループする可能性あり.
+                _onEnd?.Invoke();
             }
             else
             {
@@ -97,18 +101,20 @@ namespace KoheiUtils
 
             if (!ReferenceEquals(info, null))
             {
-                // １つ前のエントリーの onEnd を先に呼び出しておく.
-                _currentTrackEntry.onEnd?.Invoke();
+                // １つ前のエントリーの onEnd を最初に呼び出す.
+                Action _onEnd = _currentTrackEntry.onEnd;
 
                 _currentTrackEntry                = new TrackEntry();
                 _currentTrackEntry.animationIndex = animationIndex;
                 _currentTrackEntry.loop           = loop;
                 _currentTrackEntry.onEnd          = onEnd;
                 _currentTrackEntry.onCompleted    = onComplete;
-
+                
                 animation.Set(info);
                 animation.SetLoopCount(loop ? -1 : 1);
                 animation.Play();
+                
+                _onEnd?.Invoke();
             }
             else
             {
@@ -190,9 +196,14 @@ namespace KoheiUtils
                 if (!loop)
                 {
                     // NOTE: OnEnd について1回コールされると、2度コールされないようにする.
-                    _currentTrackEntry.onEnd?.Invoke();
-                    _currentTrackEntry.onEnd = null;
-
+                    // NOTE: コールする前に null を代入しないと、 onEnd コール中に遷移が発生し、StackOverFlow が起こる可能性がある.
+                    if (_currentTrackEntry.onEnd != null)
+                    {
+                        Action onEnd = _currentTrackEntry.onEnd;
+                        _currentTrackEntry.onEnd = null;
+                        onEnd.Invoke();
+                    }
+                    
                     if (!CheckStacks())
                     {
                         PlayDefault();
