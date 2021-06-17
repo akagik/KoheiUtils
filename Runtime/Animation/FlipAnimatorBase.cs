@@ -72,18 +72,20 @@ namespace KoheiUtils
 
             if (!ReferenceEquals(info, null))
             {
-                // １つ前のエントリーの onEnd を先に呼び出しておく.
-                Action _onEnd = _currentTrackEntry.onEnd;
+                // onEnd で Play は挟まる可能性があるので、すべての onEnd が消化されるまで繰り返す.
+                // 最終的には onEnd での Play は 最初の Play で上書きされる.
+                while (_currentTrackEntry.onEnd != null)
+                {
+                    Action _onEnd = _currentTrackEntry.onEnd;
+                    _currentTrackEntry.onEnd = null;
+                    _onEnd?.Invoke();
+                }
 
                 _currentTrackEntry = entry;
 
                 animation.Set(info);
                 animation.SetLoopCount(entry.loop ? -1 : 1);
                 animation.Play();
-                
-                // １つ前のエントリーの onEnd を最後に呼び出す.
-                // NOTE: 最初に呼び出すと、無限ループする可能性あり.
-                _onEnd?.Invoke();
             }
             else
             {
@@ -101,8 +103,14 @@ namespace KoheiUtils
 
             if (!ReferenceEquals(info, null))
             {
-                // １つ前のエントリーの onEnd を最初に呼び出す.
-                Action _onEnd = _currentTrackEntry.onEnd;
+                // onEnd で Play は挟まる可能性があるので、すべての onEnd が消化されるまで繰り返す.
+                // 最終的には onEnd での Play は 最初の Play で上書きされる.
+                while (_currentTrackEntry.onEnd != null)
+                {
+                    Action _onEnd = _currentTrackEntry.onEnd;
+                    _currentTrackEntry.onEnd = null;
+                    _onEnd?.Invoke();
+                }
 
                 _currentTrackEntry                = new TrackEntry();
                 _currentTrackEntry.animationIndex = animationIndex;
@@ -113,8 +121,6 @@ namespace KoheiUtils
                 animation.Set(info);
                 animation.SetLoopCount(loop ? -1 : 1);
                 animation.Play();
-                
-                _onEnd?.Invoke();
             }
             else
             {
