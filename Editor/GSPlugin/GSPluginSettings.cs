@@ -38,7 +38,7 @@ using Sirenix.OdinInspector;
             /// </summary>
             public string GetFilePathRelativesToAssets(string settingPath)
             {
-                if (targetPath.StartsWith("/"))
+                if (targetPath.StartsWith(Path.DirectorySeparatorChar.ToString()))
                 {
                     return Path.Combine("Assets", targetPath.Substring(1));
                 }

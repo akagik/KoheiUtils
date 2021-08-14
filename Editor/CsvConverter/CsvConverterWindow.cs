@@ -1,5 +1,8 @@
 ﻿using System.Collections;
+
+#if ODIN_INSPECTOR
 using Sirenix.Utilities;
+#endif
 
 namespace KoheiUtils
 {
@@ -351,7 +354,7 @@ namespace KoheiUtils
             string absolutePath = CCLogic.GetFilePathRelativesToAssets(settingPath, csvPath);
 
             // 先頭の Assets を削除する
-            if (absolutePath.StartsWith("Assets/"))
+            if (absolutePath.StartsWith("Assets" + Path.DirectorySeparatorChar))
             {
                 sheet.targetPath = absolutePath.Substring(6);
             }

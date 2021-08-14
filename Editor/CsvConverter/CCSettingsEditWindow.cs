@@ -1,10 +1,10 @@
-using Sirenix.OdinInspector;
 using UnityEngine;
 
 namespace KoheiUtils
 {
     using UnityEditor;
 #if ODIN_INSPECTOR
+    using Sirenix.OdinInspector;
     using Sirenix.OdinInspector.Editor;
 
     public class CCSettingsEditWindow : OdinEditorWindow

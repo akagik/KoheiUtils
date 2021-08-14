@@ -30,7 +30,9 @@
         void OnGUI()
         {
             Render();
+#if ODIN_INSPECTOR
             base.OnGUI();
+#endif
         }
 
         private void Render()

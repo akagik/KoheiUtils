@@ -5,7 +5,9 @@ namespace KoheiUtils
     /// </summary>
     public class IndexFlipAnimator : FlipAnimatorBase
     {
+#if ODIN_INSPECTOR
         [Sirenix.OdinInspector.PropertySpace(0, 10f)]
+#endif
         public FlipAnimationController controller;
 
         public override FlipAnimInfo GetFlipAnimInfo(int key)
