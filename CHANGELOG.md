@@ -1,7 +1,14 @@
 # Changelog
 All notable changes to this package will be documented in this file. The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
 
+
+
+## [0.1.9] - 2021-08-14
+
+- [fix] Windows 対応や Odin 周りのエラー修正
+
 ## [0.1.8] - 2021-06-17
+
 - Play onEnd が先にコールされるようにした
 
 ## [0.1.7] - 2021-06-17
