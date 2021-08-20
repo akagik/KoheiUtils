@@ -8,6 +8,12 @@ namespace KoheiUtils
     [CreateAssetMenu(menuName = "CsvConverter/GlobalSettings")]
     public class GlobalCCSettings : ScriptableObject
     {
+        [Header("Google Spread Sheet")]
+        public string apiKey;
+
+        public bool useV4 = true;
+            
+        [Header("Csv Converter")]
         /// <summary>
         /// フィールド名の行の index.
         /// 1行目が index 0 に対応する.

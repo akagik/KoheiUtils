@@ -141,16 +141,19 @@ namespace KoheiUtils {
             EditorCoroutineRunner.UpdateUILabel(label);
 
             var gsLoader = new GSLoader();
-            yield return EditorCoroutineRunner.StartCoroutine(gsLoader.LoadGS(sheetId, gid));
+            var globalSettings = CCLogic.GetGlobalSettings();
+            
+            string apiKey = globalSettings.apiKey;
+            bool useV4 = globalSettings.useV4;
 
+            yield return EditorCoroutineRunner.StartCoroutine(gsLoader.LoadGS(sheetId, gid, apiKey, useV4));
             if (!gsLoader.isSuccess)
             {
                 Debug.Log("Failed to load spreadsheet data.");
                 yield break;
             }
-            
+        
             CsvData csvData = gsLoader.loadedCsvData;
-
             string targetPathRelativeToAssets = ss.GetFilePathRelativesToAssets(settingDir);
             
             if (csvData != null) {

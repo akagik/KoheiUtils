@@ -2,6 +2,7 @@ using UnityEngine;
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using KoheiUtils.GSPlugin.v4;
 using UnityEngine.Networking;
 
 namespace KoheiUtils {
@@ -50,24 +51,36 @@ namespace KoheiUtils {
         /// まず一つ目は sheetId に対する複数の worksheet を持つ URL へのリクエスト。
         /// 二つ目は その sheetId の中で特定の gid を持つ URL へのリクエスト。
         /// </summary>
-        public IEnumerator LoadGS(string sheetId, string gid)
+        public IEnumerator LoadGS(string sheetId, string gid, string apiKey = "", bool useV4 = true)
         {
             isSuccess = false;
-            
-            // Load spread sheet
-            yield return EditorCoroutineRunner.StartCoroutine(downloadWorksheets(sheetId));
 
-            if (_worksheets == null)
+            if (useV4)
             {
-                Debug.LogError("Failed to download worksheets");
-                yield break;
-            }
+                var coroutine = GSLoaderV4.LoadCsvData(sheetId, gid, apiKey);
+                yield return coroutine;
 
-            // Load each worksheet
-            foreach (GSWorksheet sheet in _worksheets) {
-                if (sheet.gid == gid) {
-                    yield return EditorCoroutineRunner.StartCoroutine(LoadCsvData(sheet));
+                loadedCsvData = GSLoaderV4.csvData;
+                isSuccess = loadedCsvData != null;
+            }
+            // V3 old api
+            else
+            {
+                // Load spread sheet
+                yield return EditorCoroutineRunner.StartCoroutine(downloadWorksheets(sheetId));
+
+                if (_worksheets == null)
+                {
+                    Debug.LogError("Failed to download worksheets");
                     yield break;
+                }
+
+                // Load each worksheet
+                foreach (GSWorksheet sheet in _worksheets) {
+                    if (sheet.gid == gid) {
+                        yield return EditorCoroutineRunner.StartCoroutine(LoadCsvData(sheet));
+                        yield break;
+                    }
                 }
             }
         }

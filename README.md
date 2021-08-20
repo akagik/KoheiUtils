@@ -29,6 +29,17 @@ Unity で言語ローカライズをするためのモジュール.
 
 ## CsvConverter
 
+### Getting Started
+
+1. Create > CsvConverter > GlobalSettings.asset を作成
+2. Google Cloud Platform で API key を作成
+   1. 詳細は https://qiita.com/suisuina/items/a41932088acacea4835e を参照する
+3. 1で作成した設定ファイルに 2で作成した apiKey をセットする.
+4. Create > CsvConverter > CsvConverterSettings を作成する
+   1. 取り込みたいシートの情報をセットする
+5. Window > CsvConverter を開く
+6. 取り込みたいシートで Import を実行する.
+
 ### Join List
 
 あるマスターテーブルの各行がさらにリスト（テーブル）を持っている場合に利用できる.

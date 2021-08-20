@@ -175,6 +175,43 @@ namespace KoheiUtils
                 }
             }
         }
+        
+        /// <summary>
+        ///  list は List<List<object>> であることを期待する.
+        /// </summary>
+        public void SetFromListOfListObject(object table)
+        {
+            int maxCol = -1;
+
+            var list = table as List<object>;
+            
+            foreach (var row in list)
+            {
+                int col = (row as List<object>).Count;
+                if (col > maxCol)
+                {
+                    maxCol = col;
+                }
+            }
+
+            content = CreateTable(list.Count, maxCol);
+
+            for (int i = 0; i < row; i++)
+            {
+                for (int j = 0; j < col; j++)
+                {
+                    var row = list[i] as List<object>;
+                    if (j < row.Count)
+                    {
+                        Set(i, j, row[j].ToString());
+                    }
+                    else
+                    {
+                        Set(i, j, "");
+                    }
+                }
+            }
+        }
 
         public override string ToString()
         {
