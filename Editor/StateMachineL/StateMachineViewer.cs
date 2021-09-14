@@ -11,7 +11,8 @@
     public class StateMachineViewer : EditorWindow
 #endif
     {
-        [HideInInspector] public    MonoBehaviour selectedView;
+        [HideInInspector] public    bool          explicitSelect;
+        [HideInInspector] public    GameObject    selectedView;
         [HideInInspector] public    string        propertyName;
         [HideInInspector] protected StateMachine  fsm;
         [HideInInspector] public    bool          showBaseProperties;
@@ -42,9 +43,20 @@
                 GUILayout.Space(5f);
                 EditorGUI.indentLevel += 1;
                 GUILayout.Label("Base Settings", EditorStyles.boldLabel);
-                selectedView =
-                    (MonoBehaviour) EditorGUILayout.ObjectField("StateMachine", selectedView, typeof(MonoBehaviour),
-                        true);
+                
+                explicitSelect = EditorGUILayout.Toggle("Explicit select", explicitSelect);
+
+                if (explicitSelect)
+                {
+                    selectedView =
+                        (GameObject) EditorGUILayout.ObjectField("StateMachine", selectedView, typeof(GameObject),
+                            true);
+                }
+                else
+                {
+                    selectedView = (Selection.activeObject as GameObject);
+                }
+                
                 propertyName          =  EditorGUILayout.TextField("Property Name", propertyName);
                 showBaseProperties    =  EditorGUILayout.Toggle("Show base properties", showBaseProperties);
                 EditorGUI.indentLevel -= 1;
@@ -68,7 +80,7 @@
                     }
                     else
                     {
-                        if (stateFoldOuts == null)
+                        if (stateFoldOuts == null || stateFoldOuts.Length != fsm.Keys.Count)
                         {
                             stateFoldOuts = new bool[fsm.Keys.Count];
                         }
@@ -137,21 +149,41 @@
             GUILayout.EndScrollView();
         }
 
-        private StateMachine GetFieldOrPropertyValue(MonoBehaviour selectedView)
+        private StateMachine GetFieldOrPropertyValue(GameObject selectedView)
         {
-            var selectedType = selectedView.GetType();
-            var fsmProperty  = selectedType.GetProperty(propertyName);
-
-            if (fsmProperty != null)
+            foreach (Component m in selectedView.GetComponents<Component>())
             {
-                return (StateMachine) fsmProperty.GetValue(selectedView);
-            }
+                var selectedType = m.GetType();
+                
+                // プロパティチェック
+                {
+                    var fsmProperty  = selectedType.GetProperty(propertyName);
 
-            var fsmField = selectedType.GetField(propertyName);
+                    if (fsmProperty != null)
+                    {
+                        var fsm = fsmProperty.GetValue(m);
+                        
+                        if (fsm is StateMachine)
+                        {
+                            return fsm as StateMachine;
+                        }
+                    }
+                }
 
-            if (fsmField != null)
-            {
-                return (StateMachine) fsmField.GetValue(selectedView);
+                // フィールドチェック
+                {
+                    var fsmField = selectedType.GetField(propertyName);
+
+                    if (fsmField != null)
+                    {
+                        var fsm = fsmField.GetValue(m);
+                        
+                        if (fsm is StateMachine)
+                        {
+                            return fsm as StateMachine;
+                        }
+                    }
+                }
             }
 
             return null;
