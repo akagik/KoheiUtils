@@ -253,9 +253,19 @@ namespace KoheiUtils
                 // フィールド名が配列要素の場合は配列のデータをセットしておく.
                 if (fields[j].isArrayField)
                 {
-                    int length = 0;
-                    var v = Array.CreateInstance(info.FieldType.GetElementType(), length);
-                    info.SetValue(data, v);
+                    Type elementType = info.FieldType.GetElementType();
+
+                    if (elementType != null)
+                    {
+                        int length = 0;
+                        var v = Array.CreateInstance(elementType, length);
+                        info.SetValue(data, v);
+                    }
+                    else
+                    {
+                        Debug.LogError("不正な配列フィールドの型です:" + info.FieldType);
+                        fields[j].isValid = false;
+                    }
                 }
             }
 

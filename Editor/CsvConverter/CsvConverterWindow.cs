@@ -299,7 +299,7 @@ namespace KoheiUtils
 
         static bool downloadSuccess;
 
-        static IEnumerator ExecuteImport(CsvConverterSettings.Setting s, string settingPath)
+        public static IEnumerator ExecuteImport(CsvConverterSettings.Setting s, string settingPath)
         {
             downloadSuccess = false;
             yield return EditorCoroutineRunner.StartCoroutine(ExecuteDownload(s, settingPath));
