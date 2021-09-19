@@ -1,6 +1,6 @@
 {
   "name": "com.kc-works.kohei-utils",
-  "version": "0.2.1",
+  "version": "0.2.2",
   "displayName": "Kohei Utilities",
   "description": "This package contains various utils for unity",
   "unity": "2019.4",
