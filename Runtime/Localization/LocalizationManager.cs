@@ -1,12 +1,9 @@
 namespace KoheiUtils
 {
-    using System.Collections.Generic;
     using UnityEngine;
-
 #if ODIN_INSPECTOR
     using Sirenix.OdinInspector;
 #endif
-
     public class LocalizationManager : SingletonMonoBehaviour<LocalizationManager>
     {
         [SerializeField] LocalizationTable[] tables;
@@ -14,28 +11,34 @@ namespace KoheiUtils
         public bool setDefaultLanguageOnAwake;
 
 #if ODIN_INSPECTOR
-    [ShowIf("setDefaultLanguageOnAwake")]
+        [ShowIf("setDefaultLanguageOnAwake")]
 #endif
         public string defaultLanguage;
 
-#if ODIN_INSPECTOR
-        [ReadOnly]
-#endif
-        [SerializeField]
-        private string _usingLanguage = "ja";
+        [SerializeField, ReadOnly] private LocalizationLookUpTable _lookUpTable;
 
-        public string usingLangCode => _usingLanguage;
-
-        private Dictionary<string, string> cachedData;
+        public LocalizationLookUpTable lookUpTable => _lookUpTable;
 
         private new void Awake()
         {
             base.Awake();
 
+            _lookUpTable = new LocalizationLookUpTable();
+
+            for (int i = 0; i < tables.Length; i++)
+            {
+                _lookUpTable.AddLocalizationTable(tables[i]);
+            }
+
             if (setDefaultLanguageOnAwake)
             {
-                SetLanguage(defaultLanguage);
+                _lookUpTable.SetLanguage(defaultLanguage);
             }
+        }
+
+        public void AddTable(LocalizationTable table)
+        {
+            _lookUpTable.AddLocalizationTable(table);
         }
 
         /// <summary>
@@ -43,28 +46,17 @@ namespace KoheiUtils
         /// </summary>
         public void SetLanguage(string languageCode)
         {
-            _usingLanguage = languageCode;
-            MakeCache(languageCode);
+            _lookUpTable.SetLanguage(languageCode);
         }
 
         public bool ContainsKey(string key)
         {
-            Check();
-            return cachedData.ContainsKey(key);
+            return _lookUpTable.ContainsKey(key);
         }
 
         public string Get(string key)
         {
-            Check();
-
-#if UNITY_EDITOR
-            if (!cachedData.ContainsKey(key))
-            {
-                Debug.LogError("No key found: " + key);
-                return "no text";
-            }
-#endif
-            return cachedData[key];
+            return _lookUpTable.Get(key);
         }
 
         /// <summary>
@@ -72,110 +64,44 @@ namespace KoheiUtils
         /// </summary>
         public string Get(string key, string defaultVal)
         {
-            Check();
-
-            if (TryGetValue(key, out var value))
-            {
-                return value;
-            }
-
-            return defaultVal;
+            return _lookUpTable.Get(key, defaultVal);
         }
 
         public string Format(string key, params object[] args)
         {
-            Check();
-            return string.Format(cachedData[key], args);
+            return _lookUpTable.Format(key, args);
         }
 
         public bool TryGetValue(string key, out string value)
         {
-            Check();
-            return cachedData.TryGetValue(key, out value);
+            return _lookUpTable.TryGetValue(key, out value);
         }
 
         public Sprite GetSprite(string key)
         {
-            Check();
-
-            Sprite sprite = null;
-
-            if (cachedData.TryGetValue(key, out string value))
-            {
-                sprite = LoadSprite(value);
-            }
-
-            return sprite;
+            return _lookUpTable.GetSprite(key);
         }
 
         public Sprite GetSprite(string key, Sprite defaultSprite)
         {
-            Sprite sprite = GetSprite(key);
-
-            if (sprite == null)
-            {
-                sprite = defaultSprite;
-            }
-
-            return sprite;
+            return _lookUpTable.GetSprite(key, defaultSprite);
         }
 
-        private void Check()
+#if UNITY_EDITOR
+        [UnityEditor.MenuItem("GameObject/KoheiUtils/LocalizationManager", false, priority = 30)]
+        public static void Create(UnityEditor.MenuCommand menuCommand)
         {
-            if (cachedData == null)
-            {
-                MakeCache(_usingLanguage);
-            }
+            GameObject go = new GameObject("LocalizationManager");
+            go.AddComponent<LocalizationManager>();
+            
+            // Ensure it gets reparented if this was a context click (otherwise does nothing)
+            UnityEditor.GameObjectUtility.SetParentAndAlign(go, menuCommand.context as GameObject);
+            // Create a custom game object
+            // Register the creation in the undo system
+            UnityEditor.Undo.RegisterCreatedObjectUndo(go, "Create " + go.name);
+            
+            UnityEditor.Selection.activeObject = go;
         }
-
-        private void MakeCache(string languageCode)
-        {
-            cachedData = new Dictionary<string, string>();
-
-            foreach (LocalizationTable table in tables)
-            {
-                foreach (LocalizationData data in table.rows)
-                {
-                    if (cachedData.ContainsKey(data.key))
-                    {
-                        cachedData[data.key] = GetText(data, languageCode);
-                    }
-                    else
-                    {
-                        cachedData.Add(data.key, GetText(data, languageCode));
-                    }
-                }
-            }
-        }
-
-        private string GetText(LocalizationData data, string languageCode)
-        {
-            switch (languageCode)
-            {
-                case "ja":
-                    return data.ja;
-                case "en":
-                    return data.en;
-                case "zh-cn":
-                    return data.zh_cn;
-                default:
-                    break;
-            }
-
-            Debug.LogErrorFormat("指定の言語コードは存在しません: {0}", languageCode);
-            return "";
-        }
-
-        public static Sprite LoadSprite(string path)
-        {
-            if (path == "")
-            {
-                return null;
-            }
-
-            var asset = Resources.Load<Sprite>(path);
-
-            return asset;
-        }
+#endif
     }
 }
