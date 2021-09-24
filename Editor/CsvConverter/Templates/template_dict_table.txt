@@ -12,6 +12,9 @@ using UnityEngine;
 [CreateAssetMenu(menuName = "CsvConverter/%TableClassName%")]
 public class %TableClassName% : ScriptableObject, IReadOnlyList<%ClassName%>
 {
+#if ODIN_INSPECTOR
+    [Sirenix.OdinInspector.Searchable]
+#endif
     [SerializeField] List<%ClassName%> rows;
 
     private Dictionary<%KeyType%, %ClassName%> _dict;
