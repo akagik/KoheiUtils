@@ -8,9 +8,25 @@
 
     /// <summary>
     /// Editor で使われるユーティリティクラス.
+    /// % Cmd(WindowsはCtrl)
+    /// # Shift
+    /// & Alt
     /// </summary>
     public class EditorUtils
     {
+        [MenuItem ("KoheiUtils/Shortcuts/OpenProjectSettings %&l")]
+        public static void OpenPlayerProjectSettings()
+        {
+            // SettingsService.OpenProjectSettings("Project/Player");
+            Selection.activeObject = Unsupported.GetSerializedAssetInterfaceSingleton("PlayerSettings");
+        }
+
+        [MenuItem ("KoheiUtils/Shortcuts/OpenPackageManager %#&p")]
+        public static void OpenPackageManager()
+        {
+            EditorApplication.ExecuteMenuItem("Window/Package Manager");
+        }
+
         /// <summary>
         /// 指定のフィルターの唯一のアセットをロードする.
         /// アセットが見つからなかったり、複数見つかった場合はエラー.
