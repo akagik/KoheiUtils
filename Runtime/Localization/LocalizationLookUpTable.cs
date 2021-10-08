@@ -1,6 +1,4 @@
-﻿using PlasticGui.WorkspaceWindow.PendingChanges;
-
-namespace KoheiUtils
+﻿namespace KoheiUtils
 {
     using System.Collections.Generic;
     using UnityEngine;
