@@ -12,10 +12,11 @@ namespace KoheiUtils
 
 #if ODIN_INSPECTOR
         [ShowIf("setDefaultLanguageOnAwake")]
+        [ReadOnly]
 #endif
         public string defaultLanguage;
 
-        [SerializeField, ReadOnly] private LocalizationLookUpTable _lookUpTable;
+        [SerializeField] private LocalizationLookUpTable _lookUpTable;
 
         public LocalizationLookUpTable lookUpTable => _lookUpTable;
 
