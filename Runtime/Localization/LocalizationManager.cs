@@ -20,6 +20,8 @@ namespace KoheiUtils
 
         public LocalizationLookUpTable lookUpTable => _lookUpTable;
 
+        public string usingLangCode => lookUpTable.usingLangCode;
+
         private new void Awake()
         {
             base.Awake();

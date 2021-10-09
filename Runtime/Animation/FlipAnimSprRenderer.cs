@@ -10,7 +10,7 @@ namespace KoheiUtils
 #if ODIN_INSPECTOR
         [Sirenix.OdinInspector.PropertySpace(0, 10f)]
 #endif
-        private SpriteRenderer sprRenderer;
+        public SpriteRenderer sprRenderer;
         
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public override void SetSprite(Sprite sprite)

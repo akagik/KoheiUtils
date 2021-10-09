@@ -1,6 +1,10 @@
 # Changelog
 All notable changes to this package will be documented in this file. The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
 
+## [0.2.5] - 2021-10-09
+
+- [fix] 細かい調整
+
 ## [0.2.4] - 2021-10-07
 
 - [fix] ビルドエラー対応
