@@ -1,6 +1,9 @@
 {
     "name": "Kohei.KoheiUtils.Runtime",
-    "references": [],
+    "rootNamespace": "",
+    "references": [
+        "Unity.TextMeshPro"
+    ],
     "includePlatforms": [],
     "excludePlatforms": [],
     "allowUnsafeCode": false,

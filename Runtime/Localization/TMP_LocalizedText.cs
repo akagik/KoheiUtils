@@ -1,6 +1,5 @@
 ﻿namespace KoheiUtils
 {
-#if TextMeshPro
     using System.Collections;
     using System.Collections.Generic;
     using UnityEngine;
@@ -33,5 +32,4 @@
             textUI.text = LocalizationManager.Instance.Get(key);
         }
     }
-#endif
 }
