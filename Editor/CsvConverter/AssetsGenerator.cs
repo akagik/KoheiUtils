@@ -204,9 +204,11 @@ namespace KoheiUtils
             ConvertFails = 1 << 2,
             JoinIndexMismatch = 1 << 3,
             JoinNoReferenceRow = 1 << 4,
+            
+            All = SkipNoKey | EmptyCell | ConvertFails | JoinIndexMismatch | JoinNoReferenceRow
         }
 
-        public ResultType CreateCsvAssetAt(int i)
+        public ResultType CreateCsvAssetAt(int i, GlobalCCSettings gSettings)
         {
             ResultType resultType = ResultType.None;
             
@@ -290,8 +292,11 @@ namespace KoheiUtils
 
                     if (sValue == "")
                     {
-                        Debug.LogWarningFormat("{0} {1}行{2}列目: 空の値があります: {3}=\"{4}\"", setting.className, line,
-                            j + 1, info.Name, sValue);
+                        if ((gSettings.logType & ResultType.EmptyCell) != 0)
+                        {
+                            Debug.LogWarningFormat("{0} {1}行{2}列目: 空の値があります: {3}=\"{4}\"", setting.className, line,
+                                j + 1, info.Name, sValue);
+                        }
                     }
                     else
                     {
@@ -316,8 +321,11 @@ namespace KoheiUtils
 
                         if (value == null)
                         {
-                            Debug.LogWarningFormat("{0} {1}行{2}列目: 変換に失敗しました: {3}=\"{4}\"", setting.className, line,
-                                j + 1, info.Name, sValue);
+                            if ((gSettings.logType & ResultType.ConvertFails) != 0)
+                            {
+                                Debug.LogErrorFormat("{0} {1}行{2}列目: 変換に失敗しました: {3}=\"{4}\"", setting.className, line,
+                                    j + 1, info.Name, sValue);
+                            }
                         }
                     }
                 }

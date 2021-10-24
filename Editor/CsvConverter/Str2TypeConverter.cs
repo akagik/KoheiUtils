@@ -98,7 +98,11 @@
             }
             else if (t == typeof(string))
             {
-                value = sValue.Substring(1, sValue.Length - 2);
+                if ((sValue[0] == '"' && sValue[sValue.Length - 1] == '"')
+                    || (sValue[0] == '\'' && sValue[sValue.Length - 1] == '\''))
+                {
+                    value = sValue.Substring(1, sValue.Length - 2);
+                }
             }
             else if (t == typeof(Vector2))
             {

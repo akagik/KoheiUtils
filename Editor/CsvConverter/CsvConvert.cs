@@ -201,17 +201,17 @@ namespace KoheiUtils
             for (int i = 0; i < assetsGenerator.contentRowCount; i++)
             {
                 int        line       = i + 2 + 1;
-                ResultType resultType = assetsGenerator.CreateCsvAssetAt(i);
+                ResultType resultType = assetsGenerator.CreateCsvAssetAt(i, gSettings);
 
-                if ((resultType & ResultType.SkipNoKey) != 0)
+                if ((resultType & ResultType.SkipNoKey & gSettings.logType) != 0)
                 {
                     Debug.LogWarningFormat("{0} line {1}: key が存在しない行をスキップしました", s.className, line);
                 }
-                if ((resultType & ResultType.JoinIndexMismatch) != 0)
+                if ((resultType & ResultType.JoinIndexMismatch & gSettings.logType) != 0)
                 {
                     Debug.LogErrorFormat("{0} line {1}: Join する index の値が不正です. index は 0 から始めて連続する整数である必要があります", s.className, line);
                 }
-                if ((resultType & ResultType.JoinNoReferenceRow) != 0)
+                if ((resultType & ResultType.JoinNoReferenceRow & gSettings.logType) != 0)
                 {
                     Debug.LogErrorFormat("{0} line {1}: Join の対象となるマスターが存在しません", s.className, line);
                 }

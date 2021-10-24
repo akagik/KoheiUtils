@@ -13,11 +13,11 @@ namespace KoheiUtils
 
         public bool useV4 = true;
             
-        [Header("Csv Converter")]
         /// <summary>
         /// フィールド名の行の index.
         /// 1行目が index 0 に対応する.
         /// </summary>
+        [Header("Csv Converter")]
         public int rowIndexOfName = 0;
 
         /// <summary>
@@ -64,6 +64,9 @@ namespace KoheiUtils
         
         [Tooltip("csv ファイルのパスを指定しなかった場合のデフォルトのパス")]
         public string tempCsvPath = "/temp/temp.csv";
+        
+        [Tooltip("出力ログ")]
+        public AssetsGenerator.ResultType logType = AssetsGenerator.ResultType.All;
 
         /// <summary>
         /// Str2Converter で利用される追加の型.

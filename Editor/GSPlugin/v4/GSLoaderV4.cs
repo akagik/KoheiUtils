@@ -153,7 +153,7 @@ namespace KoheiUtils.GSPlugin.v4
 
                     var values = obj["values"] as List<object>;
 
-                    CsvData csv = ScriptableObject.CreateInstance<CsvData>();
+                    CsvData csv = new CsvData();
                     csv.SetFromListOfListObject(values);
                     return csv;
                 }

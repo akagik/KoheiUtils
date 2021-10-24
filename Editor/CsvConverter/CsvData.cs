@@ -5,7 +5,7 @@ using System.Collections.Generic;
 namespace KoheiUtils
 {
     [Serializable]
-    public class CsvData : ScriptableObject
+    public class CsvData
     {
         public Row[] content;
 

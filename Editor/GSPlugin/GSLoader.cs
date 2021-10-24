@@ -133,7 +133,7 @@ namespace KoheiUtils {
                 cellList[row - 1][col - 1] = inputValue;
             }
 
-            CsvData csv = ScriptableObject.CreateInstance<CsvData>();
+            CsvData csv =new CsvData();
             csv.SetFromList(cellList);
 
             this.loadedCsvData = csv;
