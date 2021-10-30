@@ -31,7 +31,7 @@ namespace KoheiUtils
         // チェックボックス用
         ConvertSetting[] cachedAllSettings;
 
-        [MenuItem("Window/CsvConverter", false, 0)]
+        [MenuItem("KoheiUtils/CsvConverter/OpenWindow", false, 0)]
         static public void OpenWindow()
         {
             EditorWindow.GetWindow<CsvConverterWindow>(false, "CsvConverter", true).Show();

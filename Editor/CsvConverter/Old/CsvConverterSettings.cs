@@ -10,7 +10,6 @@ namespace KoheiUtils
 
 #endif
 
-    [CreateAssetMenu(menuName = "CsvConverter/CsvConverterSettings")]
     public class CsvConverterSettings : ScriptableObject
     {
         public Setting[] list;

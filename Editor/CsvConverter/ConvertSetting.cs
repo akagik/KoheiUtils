@@ -60,13 +60,17 @@ namespace KoheiUtils
         [Tooltip("For example, \"../tmp/test.csv\"")]
         public string csvFilePath;
 
+        [Required]
         public string className;
 
         [Tooltip("Check a class name by fully qualified name")]
         public bool checkFullyQualifiedName;
 
-        public string destination = "";
-        public string codeDestination = "";
+        [Required]
+        public string destination = ".";
+        
+        [ShowIf("@classGenerate || tableClassGenerate || isEnum")]
+        public string codeDestination = ".";
 
 #if ODIN_INSPECTOR
         [Title("Advanced Settings")]
@@ -113,7 +117,7 @@ namespace KoheiUtils
 #if ODIN_INSPECTOR
         [ShowIf("tableGenerate")]
 #endif
-        public bool onlyTableCreate;
+        public bool onlyTableCreate = true;
 
         /// ----------------------------------------------------
         /// Join List 関連.
@@ -181,15 +185,17 @@ namespace KoheiUtils
         }
 
 
-        public bool useGSPlugin;
+        public bool useGSPlugin = true;
 
 #if ODIN_INSPECTOR
-        [Title("GSPlugin")] [Sirenix.OdinInspector.ShowIf("useGSPlugin")]
+        [Title("GoogleSpreadSheet Settings")] [Sirenix.OdinInspector.ShowIf("useGSPlugin")]
+        [Required]
 #endif
         public string sheetID;
 
 #if ODIN_INSPECTOR
         [Sirenix.OdinInspector.ShowIf("useGSPlugin")]
+        [Required]
 #endif
         public string gid;
 
@@ -197,7 +203,7 @@ namespace KoheiUtils
         [Sirenix.OdinInspector.ShowIf("useGSPlugin")]
 #endif
         [Tooltip("中間出力される csv ファイルのパスを Global Settings で指定された一時パスを使うようにする.")]
-        public bool tempCsvPath;
+        public bool tempCsvPath = true;
 
         [Title("Debug")] public bool verbose;
         public bool verboseBtn;

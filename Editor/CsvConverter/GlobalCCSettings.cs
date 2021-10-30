@@ -5,7 +5,7 @@ namespace KoheiUtils
     /// <summary>
     /// CsvConverter のグローバルな設定.
     /// </summary>
-    [CreateAssetMenu(menuName = "CsvConverter/GlobalSettings")]
+    [CreateAssetMenu(menuName = "KoheiUtils/CsvConverter/GlobalSettings")]
     public class GlobalCCSettings : ScriptableObject
     {
         [Header("Google Spread Sheet")]
