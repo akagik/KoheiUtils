@@ -215,6 +215,10 @@ namespace KoheiUtils
                 {
                     Debug.LogErrorFormat("{0} line {1}: Join の対象となるマスターが存在しません", s.className, line);
                 }
+                if ((resultType & ResultType.JoinNoFindMethod & gSettings.logType) != 0)
+                {
+                    Debug.LogErrorFormat("{0} line {1}: Join Target のテーブル class に指定された Find メソッドが存在しません: {2}", s.className, line, s.targetFindMethodName);
+                }
 
                 int total = assetsGenerator.contentRowCount;
                 if (total <= 10 || i == total - 1 || i % (total / 10) == 0)
@@ -230,6 +234,11 @@ namespace KoheiUtils
             {
                 EditorUtility.SetDirty(result.tableInstance);
                 Debug.Log($"Create \"{Path.Combine(assetsGenerator.dstFolder, s.tableAssetName)}.asset\"");
+            }
+            else if (s.@join)
+            {
+                EditorUtility.SetDirty(assetsGenerator.tableInstance);
+                Debug.Log($"Join \"{Path.Combine(assetsGenerator.dstFolder, s.tableAssetName)}.asset\"");
             }
 
             AssetDatabase.SaveAssets();

@@ -26,7 +26,7 @@ namespace KoheiUtils
         // テーブル情報
         // これらの情報は setting.tableGenerate が true のときのみ利用される.
         private Type tableType;
-        private ScriptableObject tableInstance;
+        public ScriptableObject tableInstance;
         private object dataList = null;
         
         // Join 情報
@@ -204,8 +204,9 @@ namespace KoheiUtils
             ConvertFails = 1 << 2,
             JoinIndexMismatch = 1 << 3,
             JoinNoReferenceRow = 1 << 4,
+            JoinNoFindMethod = 1 << 5,
             
-            All = SkipNoKey | EmptyCell | ConvertFails | JoinIndexMismatch | JoinNoReferenceRow
+            All = SkipNoKey | EmptyCell | ConvertFails | JoinIndexMismatch | JoinNoReferenceRow | JoinNoFindMethod
         }
 
         public ResultType CreateCsvAssetAt(int i, GlobalCCSettings gSettings)
@@ -371,6 +372,12 @@ namespace KoheiUtils
             {
                 object keyValue = data.GetType().GetField(setting.selfJoinKeyField).GetValue(data);
                 var findMethod = tableType.GetMethod(setting.targetFindMethodName);
+
+                if (findMethod == null)
+                {
+                    return ResultType.JoinNoFindMethod;
+                }
+                
                 object row = findMethod.Invoke(tableInstance, new[] { keyValue });
 
                 if (row == null)
