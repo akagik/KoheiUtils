@@ -12,43 +12,43 @@ namespace KoheiUtils
     [CreateAssetMenu(menuName = "KoheiUtils/CsvConverter/ConverterSettings")]
     public class ConvertSetting : ScriptableObject
     {
-        public ConvertSetting()
+        public ConvertSetting Copy()
         {
-        }
-
-        public ConvertSetting(ConvertSetting orig)
-        {
-            this.csvFilePath = orig.csvFilePath;
-            this.className = orig.className;
-            this.checkFullyQualifiedName = orig.checkFullyQualifiedName;
-            this.destination = orig.destination;
-            this.codeDestination = orig.codeDestination;
-            this.isEnum = orig.isEnum;
-            this.classGenerate = orig.classGenerate;
+            var copied = ScriptableObject.CreateInstance<ConvertSetting>();
+            
+            copied.csvFilePath = this.csvFilePath;
+            copied.className = this.className;
+            copied.checkFullyQualifiedName = this.checkFullyQualifiedName;
+            copied.destination = this.destination;
+            copied.codeDestination = this.codeDestination;
+            copied.isEnum = this.isEnum;
+            copied.classGenerate = this.classGenerate;
 
             // table
-            this.tableGenerate = orig.tableGenerate;
-            this.tableClassName = orig.tableClassName;
-            this._tableAssetName = orig._tableAssetName;
-            this.tableClassGenerate = orig.tableClassGenerate;
-            this.isDictionary = orig.isDictionary;
-            this.onlyTableCreate = orig.onlyTableCreate;
+            copied.tableGenerate = this.tableGenerate;
+            copied.tableClassName = this.tableClassName;
+            copied._tableAssetName = this._tableAssetName;
+            copied.tableClassGenerate = this.tableClassGenerate;
+            copied.isDictionary = this.isDictionary;
+            copied.onlyTableCreate = this.onlyTableCreate;
 
             // join
-            this.join = orig.join;
-            this.targetTable = orig.targetTable;
-            this.targetJoinKeyField = orig.targetJoinKeyField;
-            this.selfJoinKeyField = orig.selfJoinKeyField;
-            this.targetJoinListField = orig.targetJoinListField;
-            this.targetFindMethodName = orig.targetFindMethodName;
+            copied.join = this.join;
+            copied.targetTable = this.targetTable;
+            copied.targetJoinKeyField = this.targetJoinKeyField;
+            copied.selfJoinKeyField = this.selfJoinKeyField;
+            copied.targetJoinListField = this.targetJoinListField;
+            copied.targetFindMethodName = this.targetFindMethodName;
 
-            this.key = orig.key;
-            this.useGSPlugin = orig.useGSPlugin;
-            this.sheetID = orig.sheetID;
-            this.gid = orig.gid;
-            this.tempCsvPath = orig.tempCsvPath;
-            this.verbose = orig.verbose;
-            this.verboseBtn = orig.verboseBtn;
+            copied.key = this.key;
+            copied.useGSPlugin = this.useGSPlugin;
+            copied.sheetID = this.sheetID;
+            copied.gid = this.gid;
+            copied.tempCsvPath = this.tempCsvPath;
+            copied.verbose = this.verbose;
+            copied.verboseBtn = this.verboseBtn;
+
+            return copied;
         }
 
 #if ODIN_INSPECTOR

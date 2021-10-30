@@ -110,15 +110,12 @@ namespace KoheiUtils
                     // ------------------------------
                     if (GUILayout.Button("+", GUILayout.Width(20)))
                     {
-                        // var copied = Scripta
-                        // var copied = new ConvertSetting(s);
-                        // newList[newList.Length - 1] = copied;
-                        // parent.list                 = newList;
-                        //
-                        // var window = CCSettingsEditWindow.OpenWindow();
-                        // window.SetSettings(copied, parent);
-                        //
-                        // GUIUtility.ExitGUI();
+                        var copied = s.Copy();
+                        
+                        var window = CCSettingsEditWindow.OpenWindow();
+                        window.SetNewSettings(copied, s.GetDirectoryPath());
+                        
+                        GUIUtility.ExitGUI();
                     }
 
                     // ------------------------------

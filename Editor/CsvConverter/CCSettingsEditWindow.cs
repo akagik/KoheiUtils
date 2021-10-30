@@ -1,3 +1,4 @@
+using System.IO;
 using UnityEngine;
 
 namespace KoheiUtils
@@ -18,6 +19,9 @@ namespace KoheiUtils
 //        string                       settingPath;
         ConvertSetting settings;
 
+        private bool createNew;
+        private string newAssetDir;
+
         public static CCSettingsEditWindow OpenWindow()
         {
             var window = GetWindow<CCSettingsEditWindow>();
@@ -27,8 +31,21 @@ namespace KoheiUtils
 
         public void SetSettings(ConvertSetting setting)
         {
-//            this.settingPath = settingPath;
             this.settings = setting;
+            this.createNew = false;
+
+            className    = setting.className;
+            sheetId      = setting.sheetID;
+            gid          = setting.gid;
+            key          = setting.key;
+            isDictionary = setting.isDictionary;
+        }
+        
+        public void SetNewSettings(ConvertSetting setting, string newAssetDir)
+        {
+            this.settings = setting;
+            this.createNew = true;
+            this.newAssetDir = newAssetDir;
 
             className    = setting.className;
             sheetId      = setting.sheetID;
@@ -45,6 +62,12 @@ namespace KoheiUtils
             settings.gid          = gid;
             settings.key          = key;
             settings.isDictionary = isDictionary;
+
+            if (createNew)
+            {
+                string newPath = Path.Combine(newAssetDir, $"Convert_{className}.asset");
+                AssetDatabase.CreateAsset(settings, newPath);
+            }
 
             EditorUtility.SetDirty(settings);
             AssetDatabase.SaveAssets();
