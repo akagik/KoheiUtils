@@ -90,36 +90,38 @@ namespace KoheiUtils
             /// ----------------------------------------------------
 #if ODIN_INSPECTOR
             [HideIf("isEnum")]
-            [ToggleGroup("tableGenerate", "Table Generate")]
+            [HideIf("join")]
+            [ValidateInput(condition:"@!(this.join && this.tableGenerate)")]
 #endif
             public bool tableGenerate;
 
 #if ODIN_INSPECTOR
-            [ToggleGroup("tableGenerate")]
+            [ShowIf("tableGenerate")]
+            [Title("TableGenerate")]
             [InfoBox("If empty string, its value is \"{ClassName}Table\".")]
 #endif
             [SerializeField]
             string tableClassName;
 
 #if ODIN_INSPECTOR
-            [ToggleGroup("tableGenerate")]
+            [ShowIf("tableGenerate")]
             [InfoBox("If empty string, its value is tableClassName.")]
 #endif
             public string _tableAssetName;
 
 #if ODIN_INSPECTOR
-            [ToggleGroup("tableGenerate")]
+            [ShowIf("tableGenerate")]
 #endif
             public bool tableClassGenerate;
 
 #if ODIN_INSPECTOR
-            [ToggleGroup("tableGenerate")]
+            [ShowIf("tableGenerate")]
 #endif
             public bool isDictionary;
 
 
 #if ODIN_INSPECTOR
-            [ToggleGroup("tableGenerate")]
+            [ShowIf("tableGenerate")]
 #endif
             public bool onlyTableCreate;
             
@@ -127,37 +129,43 @@ namespace KoheiUtils
             /// Join List 関連.
             /// ----------------------------------------------------
 #if ODIN_INSPECTOR
-            [HideIf("isEnum")]
-            [ToggleGroup("join", "Join")]
+            [HideIf("tableGenerate")]
+            [ValidateInput(condition:"@!(this.join && this.tableGenerate)")]
 #endif
             public bool join;
 
 #if ODIN_INSPECTOR
-            [ToggleGroup("join")]
+            [ShowIf("join")]
+            [Title("Join")]
+            [Required]
 #endif
             [SerializeField]
             public UnityEngine.Object targetTable;
             
 #if ODIN_INSPECTOR
-            [ToggleGroup("join")]
+            [ShowIf("join")]
+            [Required]
 #endif
             [SerializeField]
             public string targetJoinKeyField;
             
 #if ODIN_INSPECTOR
-            [ToggleGroup("join")]
+            [ShowIf("join")]
+            [Required]
 #endif
             [SerializeField]
             public string selfJoinKeyField;
             
 #if ODIN_INSPECTOR
-            [ToggleGroup("join")]
+            [ShowIf("join")]
+            [Required]
 #endif
             [SerializeField]
             public string targetJoinListField;
             
 #if ODIN_INSPECTOR
-            [ToggleGroup("join")]
+            [ShowIf("join")]
+            [Required]
 #endif
             [SerializeField]
             public string targetFindMethodName;
@@ -166,6 +174,7 @@ namespace KoheiUtils
             /// その他
             /// ----------------------------------------------------
 #if ODIN_INSPECTOR
+            [Title("Others")]
             [HideIf("isEnum")]
 #endif
             public string key; // ScriptableObject の名前に使用.
@@ -187,6 +196,7 @@ namespace KoheiUtils
             public bool useGSPlugin;
 
 #if ODIN_INSPECTOR
+            [Title("GSPlugin")]
             [Sirenix.OdinInspector.ShowIf("useGSPlugin")]
 #endif
             public string sheetID;
@@ -202,6 +212,7 @@ namespace KoheiUtils
             [Tooltip("中間出力される csv ファイルのパスを Global Settings で指定された一時パスを使うようにする.")]
             public bool tempCsvPath;
 
+            [Title("Debug")]
             public bool verbose;
             public bool verboseBtn;
 
