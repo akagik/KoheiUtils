@@ -12,7 +12,7 @@ namespace KoheiUtils
 {
     public class AssetsGenerator
     {
-        private CsvConverterSettings.Setting setting;
+        private ConvertSetting setting;
         private Type[] customAssetTypes;
 
         private Field[] fields;
@@ -45,7 +45,7 @@ namespace KoheiUtils
 
         public int contentRowCount => content.row;
 
-        public AssetsGenerator(CsvConverterSettings.Setting _setting, Field[] _fields, CsvData _content)
+        public AssetsGenerator(ConvertSetting _setting, Field[] _fields, CsvData _content)
         {
             setting = _setting;
             fields = _fields;

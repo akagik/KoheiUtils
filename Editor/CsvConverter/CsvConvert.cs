@@ -10,8 +10,9 @@ namespace KoheiUtils
 
     public class CsvConvert
     {
-        public static void GenerateCode(CsvConverterSettings.Setting s, GlobalCCSettings gSettings, string settingPath)
+        public static void GenerateCode(ConvertSetting s, GlobalCCSettings gSettings)
         {
+            string settingPath = s.GetDirectoryPath();
             string    csvPath   = CCLogic.GetFilePathRelativesToAssets(settingPath, s.GetCsvPath(gSettings));
             TextAsset textAsset = AssetDatabase.LoadAssetAtPath<TextAsset>(csvPath);
 
@@ -96,8 +97,9 @@ namespace KoheiUtils
             AssetDatabase.Refresh();
         }
 
-        public static void CreateAssets(CsvConverterSettings.Setting s, GlobalCCSettings gSettings, string settingPath)
+        public static void CreateAssets(ConvertSetting s, GlobalCCSettings gSettings)
         {
+            string settingPath = s.GetDirectoryPath();
             string    csvPath   = CCLogic.GetFilePathRelativesToAssets(settingPath, s.GetCsvPath(gSettings));
             TextAsset textAsset = AssetDatabase.LoadAssetAtPath<TextAsset>(csvPath);
 

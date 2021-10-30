@@ -62,7 +62,7 @@ namespace KoheiUtils
             return classData;
         }
 
-        public static string GenerateTableClass(CsvConverterSettings.Setting setting, string tableClassName, Field[] keys)
+        public static string GenerateTableClass(ConvertSetting setting, string tableClassName, Field[] keys)
         {
             string className = setting.className;
 
@@ -134,7 +134,7 @@ namespace KoheiUtils
             return ta.text;
         }
 
-        public static int[] FindKeyIndexes(CsvConverterSettings.Setting setting, Field[] fields)
+        public static int[] FindKeyIndexes(ConvertSetting setting, Field[] fields)
         {
             List<int> indexes = new List<int>();
 

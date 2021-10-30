@@ -65,8 +65,9 @@
         /// <summary>
         /// メインの出力アセットへのパスを指す.
         /// </summary>
-        public static string GetMainOutputPath(CsvConverterSettings.Setting s, string settingsPath)
+        public static string GetMainOutputPath(ConvertSetting s)
         {
+            string settingsPath = s.GetDirectoryPath();
             string dst = "";
             
             if (s.isEnum)

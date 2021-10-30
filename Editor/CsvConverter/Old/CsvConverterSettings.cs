@@ -58,6 +58,45 @@ namespace KoheiUtils
                 this.verboseBtn = orig.verboseBtn;
             }
 
+            public ConvertSetting ToNewSettings()
+            {
+                var obj = ScriptableObject.CreateInstance<ConvertSetting>();
+                
+                obj.csvFilePath = this.csvFilePath;
+                obj.className = this.className;
+                obj.checkFullyQualifiedName = this.checkFullyQualifiedName;
+                obj.destination = this.destination;
+                obj.codeDestination = this.codeDestination;
+                obj.isEnum = this.isEnum;
+                obj.classGenerate = this.classGenerate;
+                
+                // table
+                obj.tableGenerate = this.tableGenerate;
+                obj.tableClassName = this.tableClassName;
+                obj._tableAssetName = this._tableAssetName;
+                obj.tableClassGenerate = this.tableClassGenerate;
+                obj.isDictionary = this.isDictionary;
+                obj.onlyTableCreate = this.onlyTableCreate;
+                
+                // join
+                obj.join = this.join;
+                obj.targetTable = this.targetTable;
+                obj.targetJoinKeyField = this.targetJoinKeyField;
+                obj.selfJoinKeyField = this.selfJoinKeyField;
+                obj.targetJoinListField = this.targetJoinListField;
+                obj.targetFindMethodName = this.targetFindMethodName;
+                
+                obj.key = this.key;
+                obj.useGSPlugin = this.useGSPlugin;
+                obj.sheetID = this.sheetID;
+                obj.gid = this.gid;
+                obj.tempCsvPath = this.tempCsvPath;
+                obj.verbose = this.verbose;
+                obj.verboseBtn = this.verboseBtn;
+
+                return obj;
+            }
+
 #if ODIN_INSPECTOR
             [Title("Basic Settings")]
 #endif

@@ -15,10 +15,8 @@ namespace KoheiUtils
         public string key;
         public bool   isDictionary;
 
-        CsvConverterSettings parent;
-
 //        string                       settingPath;
-        CsvConverterSettings.Setting settings;
+        ConvertSetting settings;
 
         public static CCSettingsEditWindow OpenWindow()
         {
@@ -27,10 +25,9 @@ namespace KoheiUtils
             return window;
         }
 
-        public void SetSettings(CsvConverterSettings.Setting setting, CsvConverterSettings parent)
+        public void SetSettings(ConvertSetting setting)
         {
 //            this.settingPath = settingPath;
-            this.parent   = parent;
             this.settings = setting;
 
             className    = setting.className;
@@ -49,7 +46,7 @@ namespace KoheiUtils
             settings.key          = key;
             settings.isDictionary = isDictionary;
 
-            EditorUtility.SetDirty(parent);
+            EditorUtility.SetDirty(settings);
             AssetDatabase.SaveAssets();
             AssetDatabase.Refresh();
 

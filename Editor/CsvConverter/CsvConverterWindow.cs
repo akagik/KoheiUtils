@@ -29,9 +29,7 @@ namespace KoheiUtils
         private        string   searchTxt = "";
 
         // チェックボックス用
-        CsvConverterSettings.Setting[] cachedAllSettings;
-        private string[]               cachedAllSettingsPath;
-        private CsvConverterSettings[] cachedAllParentSettings;
+        ConvertSetting[] cachedAllSettings;
 
         [MenuItem("Window/CsvConverter", false, 0)]
         static public void OpenWindow()
@@ -42,39 +40,27 @@ namespace KoheiUtils
         void OnFocus()
         {
             // isAll用のデータをキャッシュ
-            var allSettingList       = new List<CsvConverterSettings.Setting>();
-            var allSettingPathList   = new List<string>();
-            var allParentSettingList = new List<CsvConverterSettings>();
+            var allSettingList       = new List<ConvertSetting>();
 
-            string[] settingGUIDArray = AssetDatabase.FindAssets("t:CsvConverterSettings");
+            string[] settingGUIDArray = AssetDatabase.FindAssets("t:ConvertSetting");
             for (int i = 0; i < settingGUIDArray.Length; i++)
             {
                 string assetPath = AssetDatabase.GUIDToAssetPath(settingGUIDArray[i]);
-                var    settings  = AssetDatabase.LoadAssetAtPath<CsvConverterSettings>(assetPath);
-                allSettingList.AddRange(settings.list);
-
-                string settingPath = Path.GetDirectoryName(assetPath);
-                allSettingPathList.AddRange(Enumerable.Repeat(settingPath, settings.list.Length));
-                allParentSettingList.AddRange(Enumerable.Repeat(settings, settings.list.Length));
+                var    settings  = AssetDatabase.LoadAssetAtPath<ConvertSetting>(assetPath);
+                allSettingList.Add(settings);
             }
 
             cachedAllSettings       = allSettingList.ToArray();
-            cachedAllSettingsPath   = allSettingPathList.ToArray();
-            cachedAllParentSettings = allParentSettingList.ToArray();
         }
 
         private void OnGUI()
         {
             GUILayout.Space(6f);
-            CsvConverterSettings.Setting[] setting        = null;
-            CsvConverterSettings[]         parentSettings = null;
-            string[]                       settingPaths   = null;
+            ConvertSetting[] settings = null;
 
             if (cachedAllSettings != null)
             {
-                setting        = cachedAllSettings;
-                settingPaths   = cachedAllSettingsPath;
-                parentSettings = cachedAllParentSettings;
+                settings = cachedAllSettings;
             }
 
             // 検索ボックスを表示
@@ -83,15 +69,13 @@ namespace KoheiUtils
             searchTxt = searchTxt.ToLower();
             GUILayout.EndHorizontal();
 
-            if (setting != null)
+            if (settings != null)
             {
                 scrollPosition = GUILayout.BeginScrollView(scrollPosition);
 
-                for (int i = 0; i < setting.Length; i++)
+                for (int i = 0; i < settings.Length; i++)
                 {
-                    var s           = setting[i];
-                    var parent      = parentSettings[i];
-                    var settingPath = settingPaths[i];
+                    var s = settings[i];
 
                     // 設定が削除されている場合などに対応
                     if (s == null)
@@ -126,16 +110,15 @@ namespace KoheiUtils
                     // ------------------------------
                     if (GUILayout.Button("+", GUILayout.Width(20)))
                     {
-                        var newList = new CsvConverterSettings.Setting[parent.list.Length + 1];
-                        Array.Copy(parent.list, newList, parent.list.Length);
-                        var copied = new CsvConverterSettings.Setting(s);
-                        newList[newList.Length - 1] = copied;
-                        parent.list                 = newList;
-
-                        var window = CCSettingsEditWindow.OpenWindow();
-                        window.SetSettings(copied, parent);
-
-                        GUIUtility.ExitGUI();
+                        // var copied = Scripta
+                        // var copied = new ConvertSetting(s);
+                        // newList[newList.Length - 1] = copied;
+                        // parent.list                 = newList;
+                        //
+                        // var window = CCSettingsEditWindow.OpenWindow();
+                        // window.SetSettings(copied, parent);
+                        //
+                        // GUIUtility.ExitGUI();
                     }
 
                     // ------------------------------
@@ -145,7 +128,7 @@ namespace KoheiUtils
                     if (GUILayout.Button(edit, GUILayout.Width(20)))
                     {
                         var window = CCSettingsEditWindow.OpenWindow();
-                        window.SetSettings(s, parent);
+                        window.SetSettings(s);
                         GUIUtility.ExitGUI();
                     }
 #endif
@@ -158,7 +141,7 @@ namespace KoheiUtils
                     {
                         if (GUILayout.Button(s.tableAssetName, "Label"))
                         {
-                            EditorGUIUtility.PingObject(parentSettings[i].GetInstanceID());
+                            EditorGUIUtility.PingObject(s.GetInstanceID());
                             GUIUtility.ExitGUI();
                         }
                     }
@@ -166,7 +149,7 @@ namespace KoheiUtils
                     {
                         if (GUILayout.Button(s.className, "Label"))
                         {
-                            EditorGUIUtility.PingObject(parentSettings[i].GetInstanceID());
+                            EditorGUIUtility.PingObject(s.GetInstanceID());
                             GUIUtility.ExitGUI();
                         }
                     }
@@ -181,7 +164,7 @@ namespace KoheiUtils
                     {
                         if (GUILayout.Button("Import", GUILayout.Width(110)))
                         {
-                            EditorCoroutineRunner.StartCoroutine(ExecuteImport(s, settingPath));
+                            EditorCoroutineRunner.StartCoroutine(ExecuteImport(s));
                             GUIUtility.ExitGUI();
                         }
 
@@ -200,7 +183,7 @@ namespace KoheiUtils
                         {
                             if (GUILayout.Button("DownLoad", GUILayout.Width(110)))
                             {
-                                EditorCoroutineRunner.StartCoroutine(ExecuteDownload(s, settingPath));
+                                EditorCoroutineRunner.StartCoroutine(ExecuteDownload(s));
                                 GUIUtility.ExitGUI();
                             }
                         }
@@ -217,7 +200,7 @@ namespace KoheiUtils
                         {
                             GlobalCCSettings gSettings = CCLogic.GetGlobalSettings();
                             isDownloading = true;
-                            GenerateOneCode(s, gSettings, settingPath);
+                            GenerateOneCode(s, gSettings);
                             isDownloading = false;
 
                             GUIUtility.ExitGUI();
@@ -234,7 +217,7 @@ namespace KoheiUtils
 
                         if (GUILayout.Button("Create Assets", GUILayout.Width(110)) && !isDownloading)
                         {
-                            CreateAssetsJob createAssetsJob = new CreateAssetsJob(s, settingPath);
+                            CreateAssetsJob createAssetsJob = new CreateAssetsJob(s);
                             createAssetsJob.Execute();
                             GUIUtility.ExitGUI();
                         }
@@ -254,7 +237,7 @@ namespace KoheiUtils
                         }
                         else
                         {
-                            string mainOutputPath = CCLogic.GetMainOutputPath(s, settingPath);
+                            string mainOutputPath = CCLogic.GetMainOutputPath(s);
 
                             if (mainOutputPath != null)
                             {
@@ -277,7 +260,7 @@ namespace KoheiUtils
                 {
                     GlobalCCSettings gSettings = CCLogic.GetGlobalSettings();
                     isDownloading = true;
-                    GenerateAllCode(setting, gSettings, settingPaths);
+                    GenerateAllCode(settings, gSettings);
                     isDownloading = false;
 
                     GUIUtility.ExitGUI();
@@ -287,7 +270,7 @@ namespace KoheiUtils
                 {
                     GlobalCCSettings gSettings = CCLogic.GetGlobalSettings();
                     isDownloading = true;
-                    CreateAllAssets(setting, gSettings, settingPaths);
+                    CreateAllAssets(settings, gSettings);
                     isDownloading = false;
 
                     GUIUtility.ExitGUI();
@@ -299,17 +282,17 @@ namespace KoheiUtils
 
         static bool downloadSuccess;
 
-        public static IEnumerator ExecuteImport(CsvConverterSettings.Setting s, string settingPath)
+        public static IEnumerator ExecuteImport(ConvertSetting s)
         {
             downloadSuccess = false;
-            yield return EditorCoroutineRunner.StartCoroutine(ExecuteDownload(s, settingPath));
+            yield return EditorCoroutineRunner.StartCoroutine(ExecuteDownload(s));
 
             if (!downloadSuccess)
             {
                 yield break;
             }
             
-            CreateAssetsJob createAssetsJob = new CreateAssetsJob(s, settingPath);
+            CreateAssetsJob createAssetsJob = new CreateAssetsJob(s);
 
             // Generate Code if type script is not found.
             Type assetType;
@@ -317,7 +300,7 @@ namespace KoheiUtils
                 s.checkFullyQualifiedName, dialog: false))
             {
                 GlobalCCSettings gSettings = CCLogic.GetGlobalSettings();
-                GenerateOneCode(s, gSettings, settingPath);
+                GenerateOneCode(s, gSettings);
 
                 if (!s.isEnum)
                 {
@@ -335,7 +318,7 @@ namespace KoheiUtils
             }
         }
         
-        public static IEnumerator ExecuteDownload(CsvConverterSettings.Setting s, string settingPath)
+        public static IEnumerator ExecuteDownload(ConvertSetting s)
         {
             GSPluginSettings.Sheet sheet = new GSPluginSettings.Sheet();
             sheet.sheetId = s.sheetID;
@@ -351,7 +334,7 @@ namespace KoheiUtils
                 yield break;
             }
 
-            string absolutePath = CCLogic.GetFilePathRelativesToAssets(settingPath, csvPath);
+            string absolutePath = CCLogic.GetFilePathRelativesToAssets(s.GetDirectoryPath(), csvPath);
 
             // 先頭の Assets を削除する
             if (absolutePath.StartsWith("Assets" + Path.DirectorySeparatorChar))
@@ -368,7 +351,7 @@ namespace KoheiUtils
             sheet.isCsv = true;
 
             string title = "Google Spreadsheet Loader";
-            yield return EditorCoroutineRunner.StartCoroutineWithUI(GSEditorWindow.Download(sheet, settingPath), title, true);
+            yield return EditorCoroutineRunner.StartCoroutineWithUI(GSEditorWindow.Download(sheet, s.GetDirectoryPath()), title, true);
             
             // 成功判定を行う.
             if (GSEditorWindow.previousDownloadSuccess)
@@ -379,17 +362,16 @@ namespace KoheiUtils
             yield break;
         }
 
-        public static void GenerateAllCode(CsvConverterSettings.Setting[] setting, GlobalCCSettings gSettings,
-            string[]                                                      settingPaths)
+        public static void GenerateAllCode(ConvertSetting[] setting, GlobalCCSettings gSettings)
         {
             int i = 0;
 
             try
             {
-                foreach (CsvConverterSettings.Setting s in setting)
+                foreach (ConvertSetting s in setting)
                 {
                     show_progress(s.className, (float) i / setting.Length, i, setting.Length);
-                    CsvConvert.GenerateCode(s, gSettings, settingPaths[i]);
+                    CsvConvert.GenerateCode(s, gSettings);
                     i++;
                     show_progress(s.className, (float) i / setting.Length, i, setting.Length);
                 }
@@ -404,14 +386,13 @@ namespace KoheiUtils
             EditorUtility.ClearProgressBar();
         }
 
-        public static void CreateAllAssets(CsvConverterSettings.Setting[] setting, GlobalCCSettings gSettings,
-            string[]                                                      settingPaths)
+        public static void CreateAllAssets(ConvertSetting[] setting, GlobalCCSettings gSettings)
         {
             try
             {
                 for (int i = 0; i < setting.Length; i++)
                 {
-                    CsvConvert.CreateAssets(setting[i], gSettings, settingPaths[i]);
+                    CsvConvert.CreateAssets(setting[i], gSettings);
                 }
             }
             catch (Exception e)
@@ -424,14 +405,13 @@ namespace KoheiUtils
             EditorUtility.ClearProgressBar();
         }
 
-        public static void GenerateOneCode(CsvConverterSettings.Setting s, GlobalCCSettings gSettings,
-            string                                                      settingPath)
+        public static void GenerateOneCode(ConvertSetting s, GlobalCCSettings gSettings)
         {
             show_progress(s.className, 0, 0, 1);
 
             try
             {
-                CsvConvert.GenerateCode(s, gSettings, settingPath);
+                CsvConvert.GenerateCode(s, gSettings);
             }
             catch (Exception e)
             {

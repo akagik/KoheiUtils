@@ -6,13 +6,12 @@ namespace KoheiUtils
 {
     public class CreateAssetsJob
     {
-        public CsvConverterSettings.Setting settings;
-        public string                       settingPath;
+        public ConvertSetting settings;
+        public string settingPath => settings.GetDirectoryPath();
 
-        public CreateAssetsJob(CsvConverterSettings.Setting settings, string settingPath)
+        public CreateAssetsJob(ConvertSetting settings)
         {
             this.settings    = settings;
-            this.settingPath = settingPath;
         }
 
         public void Execute()
@@ -21,7 +20,7 @@ namespace KoheiUtils
 
             try
             {
-                CsvConvert.CreateAssets(settings, gSettings, settingPath);
+                CsvConvert.CreateAssets(settings, gSettings);
             }
             catch (Exception e)
             {
