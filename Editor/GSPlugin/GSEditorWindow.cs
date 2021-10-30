@@ -184,7 +184,8 @@ namespace KoheiUtils {
                     // AssetDatabase.CreateAsset(csvData, targetPathRelativeToAssets);
                     Debug.LogError("CsvData の書き出しには未対応になりました");
                 }
-                Debug.Log("Write " + ss.targetPath);
+                
+                if (ss.verbose) Debug.Log("Write " + ss.targetPath);
                 
                 previousDownloadSuccess = true;
                 AssetDatabase.Refresh();

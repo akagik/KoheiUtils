@@ -313,6 +313,17 @@ namespace KoheiUtils
             {
                 createAssetsJob.Execute();
             }
+
+            // AfterImport 処理
+            for (int i = 0; i < s.executeAfterImport.Count; i++)
+            {
+                var afterSettings = s.executeAfterImport[i];
+
+                if (afterSettings != null)
+                {
+                    yield return EditorCoroutineRunner.StartCoroutine(ExecuteImport(afterSettings));
+                }
+            }
         }
         
         public static IEnumerator ExecuteDownload(ConvertSetting s)
@@ -346,6 +357,7 @@ namespace KoheiUtils
             }
 
             sheet.isCsv = true;
+            sheet.verbose = false;
 
             string title = "Google Spreadsheet Loader";
             yield return EditorCoroutineRunner.StartCoroutineWithUI(GSEditorWindow.Download(sheet, s.GetDirectoryPath()), title, true);

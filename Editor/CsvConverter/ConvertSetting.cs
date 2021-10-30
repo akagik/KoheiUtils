@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using UnityEngine;
 using System.Linq;
 using UnityEditor;
@@ -41,6 +42,7 @@ namespace KoheiUtils
             copied.targetFindMethodName = this.targetFindMethodName;
 
             copied.key = this.key;
+            copied.executeAfterImport = new List<ConvertSetting>(executeAfterImport);
             copied.useGSPlugin = this.useGSPlugin;
             copied.sheetID = this.sheetID;
             copied.gid = this.gid;
@@ -133,6 +135,7 @@ namespace KoheiUtils
         [Required]
 #endif
         [SerializeField]
+        [Tooltip("Table of join destination.")]
         public UnityEngine.Object targetTable;
 
 #if ODIN_INSPECTOR
@@ -140,6 +143,7 @@ namespace KoheiUtils
         [Required]
 #endif
         [SerializeField]
+        [Tooltip("Name of the key field of the class of the table to be joined.")]
         public string targetJoinKeyField;
 
 #if ODIN_INSPECTOR
@@ -147,6 +151,7 @@ namespace KoheiUtils
         [Required]
 #endif
         [SerializeField]
+        [Tooltip("Name of its own key field.")]
         public string selfJoinKeyField;
 
 #if ODIN_INSPECTOR
@@ -154,6 +159,7 @@ namespace KoheiUtils
         [Required]
 #endif
         [SerializeField]
+        [Tooltip("The name of the list field that the class of the table to be joined has. Each element of this list corresponds to a row of itself.")]
         public string targetJoinListField;
 
 #if ODIN_INSPECTOR
@@ -161,6 +167,7 @@ namespace KoheiUtils
         [Required]
 #endif
         [SerializeField]
+        [Tooltip("The name of a find method that takes the key of the table class to be joined as an argument.")]
         public string targetFindMethodName;
 
         /// ----------------------------------------------------
@@ -183,7 +190,9 @@ namespace KoheiUtils
                 return key.Split(',').Select((arg) => arg.Trim()).Where((arg) => arg.Length > 0).ToArray();
             }
         }
-
+        
+        [Tooltip("Import by these settings after importing.")]
+        public List<ConvertSetting> executeAfterImport;
 
         public bool useGSPlugin = true;
 

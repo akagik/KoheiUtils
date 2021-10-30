@@ -27,6 +27,8 @@ using Sirenix.OdinInspector;
 
             public bool isCsv = true;
 
+            public bool verbose;
+
             public override string ToString()
             {
                 return $"SheetSettings(sheetId=\"{sheetId}\", gid=\"{gid}\")";
