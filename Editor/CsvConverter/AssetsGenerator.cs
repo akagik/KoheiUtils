@@ -364,6 +364,7 @@ namespace KoheiUtils
             {
                 EditorUtility.SetDirty(data as UnityEngine.Object);
             }
+            
             if (setting.tableGenerate)
             {
                 dataList.GetType().GetMethod("Add").Invoke(dataList, new object[] {data});

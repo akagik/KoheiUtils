@@ -1,7 +1,18 @@
 # Changelog
 All notable changes to this package will be documented in this file. The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
 
-## [0.2.7] - 2021-10-24
+## [0.3.0] - 2021-11-02
+
+- [feat] CsvConverterSettings を１ファイル＝１設定にするようにした
+  - 古い設定ファイルは動かなくなるので、KoheiUtils > CsvConverter > Convert Settings を動かす必要あり
+- [fix] Join 後の自動保存設定
+- [fix] Join 自動実行設定 
+
+## [0.2.7] - 2021-[0.2.7] - 2021-10-24
+
+- [fix] ログの出力設定を可能にした
+
+## 10-24
 
 - [fix] ログの出力設定を可能にした
 
