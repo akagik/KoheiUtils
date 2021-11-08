@@ -7,6 +7,16 @@ namespace KoheiUtils
     /// </summary>
     public class DefaultDictionary<TKey, TValue> : Dictionary<TKey, TValue> where TValue : new()
     {
+        public DefaultDictionary() : base ()
+        {
+            
+        }
+        
+        public DefaultDictionary(DefaultDictionary<TKey, TValue> copied) : base (copied)
+        {
+            
+        }
+
         public new TValue this[TKey key]
         {
             get
