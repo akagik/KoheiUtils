@@ -8,6 +8,7 @@ namespace KoheiUtils
     {
         [SerializeField] LocalizationTable[] tables;
 
+        public bool setupOnAwake = true;
         public bool setDefaultLanguageOnAwake;
 
 #if ODIN_INSPECTOR
@@ -26,16 +27,24 @@ namespace KoheiUtils
         {
             base.Awake();
 
+            if (setupOnAwake)
+            {
+                Setup();
+            }
+            
+            if (setDefaultLanguageOnAwake)
+            {
+                _lookUpTable.SetLanguage(defaultLanguage);
+            }
+        }
+
+        public void Setup()
+        {
             _lookUpTable = new LocalizationLookUpTable();
 
             for (int i = 0; i < tables.Length; i++)
             {
                 _lookUpTable.AddLocalizationTable(tables[i]);
-            }
-
-            if (setDefaultLanguageOnAwake)
-            {
-                _lookUpTable.SetLanguage(defaultLanguage);
             }
         }
 
