@@ -92,6 +92,10 @@
             {
                 value = LoadAsset<Sprite>(sValue);
             }
+            else if (t == typeof(AudioClip))
+            {
+                value = LoadAsset<AudioClip>(sValue);
+            }
             else if (t == typeof(Material))
             {
                 value = LoadAsset<Material>(sValue);
