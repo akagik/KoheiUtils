@@ -5,6 +5,8 @@
 
     public abstract class SingletonMonoBehaviour<T> : MonoBehaviour where T : MonoBehaviour
     {
+        [SerializeField] bool dontDestroy = true;
+        
         private static T instance;
 
         public static bool Exists
@@ -58,7 +60,10 @@
             }
 
             // シーンを跨いでこのオブジェクトが消されないようにする
-            DontDestroyOnLoad(this.gameObject);
+            if (dontDestroy)
+            {
+                DontDestroyOnLoad(this.gameObject);
+            }
         }
     }
 }

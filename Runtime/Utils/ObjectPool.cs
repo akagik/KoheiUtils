@@ -176,5 +176,25 @@ namespace KoheiUtils
                 returnedElement.gameObject.SetActive(false);
             }
         }
+
+        public void ReturnAll()
+        {
+            _currentRentSize = 0;
+
+            for (int i = 0; i < elements.Length; i++)
+            {
+                if (elements[i].isRent)
+                {
+                    elements[i].Return();
+
+                    if (inactiveOnReturn)
+                    {
+                        elements[i].gameObject.SetActive(false);
+                    }
+                }
+            }
+
+            currentIndex = elements.Length - 1;
+        }
     }
 }
