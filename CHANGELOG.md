@@ -1,6 +1,10 @@
 # Changelog
 All notable changes to this package will be documented in this file. The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
 
+## [0.3.5] - 2022-08-16
+
+- [feat] ExecuteMethodAfterImort の引数として Table が渡るようにした
+
 ## [0.3.4] - 2022-08-16
 
 - [feat] CsvConverter で Import 後にメソッドを実行できるようにした
