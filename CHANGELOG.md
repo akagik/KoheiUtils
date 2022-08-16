@@ -1,6 +1,11 @@
 # Changelog
 All notable changes to this package will be documented in this file. The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
 
+## [0.3.4] - 2022-08-16
+
+- [feat] CsvConverter で Import 後にメソッドを実行できるようにした
+- [feat] CsvConverter で Import 後に Validation メソッドを実行できるようにした
+
 ## [0.3.3] - 2022-06-13
 
 - [feat] ObjectPool に ReturnAll を追加
