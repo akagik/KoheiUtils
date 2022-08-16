@@ -43,6 +43,7 @@ namespace KoheiUtils
 
             copied.key = this.key;
             copied.executeAfterImport = new List<ConvertSetting>(executeAfterImport);
+            copied.executeMethodAfterImport= new List<string>(executeMethodAfterImport);
             copied.useGSPlugin = this.useGSPlugin;
             copied.sheetID = this.sheetID;
             copied.gid = this.gid;
@@ -193,6 +194,9 @@ namespace KoheiUtils
         
         [Tooltip("Import by these settings after importing.")]
         public List<ConvertSetting> executeAfterImport;
+        
+        [Tooltip("Import 後に実行する static メソッド. NameSpace.TypeName.MethodName(, AssemblyName)の形で指定する")]
+        public List<string> executeMethodAfterImport;
 
         public bool useGSPlugin = true;
 

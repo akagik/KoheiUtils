@@ -1,5 +1,5 @@
 ﻿using System.Collections;
-
+using KoheiUtils.Reflections;
 #if ODIN_INSPECTOR
 using Sirenix.Utilities;
 #endif
@@ -322,6 +322,21 @@ namespace KoheiUtils
                 if (afterSettings != null)
                 {
                     yield return EditorCoroutineRunner.StartCoroutine(ExecuteImport(afterSettings));
+                }
+            }
+            
+            // AfterImportMethod 処理
+            for (int i = 0; i < s.executeMethodAfterImport.Count; i++)
+            {
+                var methodName = s.executeMethodAfterImport[i];
+
+                if (MethodReflection.TryParse(methodName, out var info))
+                {
+                    info.methodInfo.Invoke(null, null);
+                }
+                else
+                {
+                    Debug.LogError($"不正なメソッド名の指定なのでメソッド呼び出しをスキップしました: {methodName}");
                 }
             }
         }
