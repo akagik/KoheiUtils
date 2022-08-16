@@ -334,7 +334,7 @@ namespace KoheiUtils
 
                 if (MethodReflection.TryParse(methodName, out var info))
                 {
-                    info.methodInfo.Invoke(null, null);
+                    info.methodInfo.Invoke(null, new []{ generatedAssets });
                 }
                 else
                 {
