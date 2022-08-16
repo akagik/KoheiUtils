@@ -44,6 +44,7 @@ namespace KoheiUtils
             copied.key = this.key;
             copied.executeAfterImport = new List<ConvertSetting>(executeAfterImport);
             copied.executeMethodAfterImport= new List<string>(executeMethodAfterImport);
+            copied.executeValidationAfterImport = new List<string>(executeValidationAfterImport);
             copied.useGSPlugin = this.useGSPlugin;
             copied.sheetID = this.sheetID;
             copied.gid = this.gid;
@@ -197,6 +198,9 @@ namespace KoheiUtils
         
         [Tooltip("Import 後に実行する static メソッド. NameSpace.TypeName.MethodName(, AssemblyName)の形で指定する")]
         public List<string> executeMethodAfterImport;
+        
+        [Tooltip("table を引数に受け取り、 Validation が成功した場合は true を返すような static メソッドを指定する.")]
+        public List<string> executeValidationAfterImport;
 
         public bool useGSPlugin = true;
 

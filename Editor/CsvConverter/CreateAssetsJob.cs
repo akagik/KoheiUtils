@@ -14,13 +14,15 @@ namespace KoheiUtils
             this.settings    = settings;
         }
 
-        public void Execute()
+        public object Execute()
         {
             GlobalCCSettings gSettings = CCLogic.GetGlobalSettings();
 
+            object generated = null;
+            
             try
             {
-                CsvConvert.CreateAssets(settings, gSettings);
+                generated = CsvConvert.CreateAssets(settings, gSettings);
             }
             catch (Exception e)
             {
@@ -30,6 +32,8 @@ namespace KoheiUtils
             AssetDatabase.SaveAssets();
             AssetDatabase.Refresh();
             EditorUtility.ClearProgressBar();
+
+            return generated;
         }
     }
 }

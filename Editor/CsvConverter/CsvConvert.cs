@@ -97,7 +97,7 @@ namespace KoheiUtils
             AssetDatabase.Refresh();
         }
 
-        public static void CreateAssets(ConvertSetting s, GlobalCCSettings gSettings)
+        public static object CreateAssets(ConvertSetting s, GlobalCCSettings gSettings)
         {
             string settingPath = s.GetDirectoryPath();
             string    csvPath   = CCLogic.GetFilePathRelativesToAssets(settingPath, s.GetCsvPath(gSettings));
@@ -106,12 +106,12 @@ namespace KoheiUtils
             if (textAsset == null)
             {
                 Debug.LogError("Not found : " + csvPath);
-                return;
+                return null;
             }
 
             if (s.isEnum)
             {
-                return;
+                return null;
             }
 
             // csv ファイルから読み込み
@@ -135,7 +135,7 @@ namespace KoheiUtils
                     }
                     else
                     {
-                        return;
+                        return null;
                     }
                 }
 
@@ -145,7 +145,7 @@ namespace KoheiUtils
             Type assetType;
             if (!TryGetTypeWithError(s.className, out assetType, s.checkFullyQualifiedName))
             {
-                return;
+                return null;
             }
 
             // 生成する各要素の class type を取得
@@ -175,7 +175,7 @@ namespace KoheiUtils
             {
                 if (!TryGetTypeWithError(s.TableClassName, out tableType, s.checkFullyQualifiedName))
                 {
-                    return;
+                    return null;
                 }
             }
 
@@ -195,7 +195,7 @@ namespace KoheiUtils
                 if (!isSuccess)
                 {
                     Debug.LogError("不正な Join 設定です");
-                    return;
+                    return null;
                 }
             }
 
@@ -254,6 +254,17 @@ namespace KoheiUtils
             }
 
             EditorUtility.ClearProgressBar();
+            
+            if (s.tableGenerate)
+            {
+                return result.tableInstance;
+            }
+            else if (s.@join)
+            {
+                return assetsGenerator.tableInstance;
+            }
+
+            return null;
         }
 
         public static bool TryGetTypeWithError(string name, out Type type, bool fullyQualifiedName = false,

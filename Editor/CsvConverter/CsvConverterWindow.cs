@@ -291,6 +291,8 @@ namespace KoheiUtils
             
             CreateAssetsJob createAssetsJob = new CreateAssetsJob(s);
 
+            object generatedAssets = null;
+            
             // Generate Code if type script is not found.
             Type assetType;
             if (s.isEnum || !CsvConvert.TryGetTypeWithError(s.className, out assetType,
@@ -311,7 +313,7 @@ namespace KoheiUtils
             // Create Assets
             else
             {
-                createAssetsJob.Execute();
+                generatedAssets = createAssetsJob.Execute();
             }
 
             // AfterImport 処理
@@ -337,6 +339,47 @@ namespace KoheiUtils
                 else
                 {
                     Debug.LogError($"不正なメソッド名の指定なのでメソッド呼び出しをスキップしました: {methodName}");
+                }
+            }
+            
+            // AfterImport Validation 処理
+            if (s.executeValidationAfterImport.Count > 0)
+            {
+                bool validationOk = true;
+                
+                for (int i = 0; i < s.executeValidationAfterImport.Count; i++)
+                {
+                    var methodName = s.executeValidationAfterImport[i];
+
+                    if (MethodReflection.TryParse(methodName, out var info))
+                    {
+                        object resultObj = info.methodInfo.Invoke(null, new []{ generatedAssets });
+
+                        if (resultObj is bool resultBool)
+                        {
+                            validationOk &= resultBool;
+                        }
+                        else
+                        {
+                            validationOk = false;
+                            Debug.LogError($"Validation Method は bool 値を返す必要があります: {methodName}");
+                        }
+                    }
+                    else
+                    {
+                        validationOk = false;
+                        Debug.LogError($"不正なメソッド名の指定なので Validation メソッド呼び出しをスキップしました: {methodName}");
+                    }
+                }
+
+                if (validationOk)
+                {
+                    Debug.Log("<color=green>Validation Success</color>");
+                }
+                else
+                {
+                    Debug.LogError("<color=red>Validation Fails...</color>");
+                    Debug.LogError("Validation に失敗しました。テーブルを見直して正しいデータに修正してください。");
                 }
             }
         }
