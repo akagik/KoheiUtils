@@ -10,7 +10,8 @@
     [System.Serializable]
     public class LocalizationLookUpTable
     {
-        private Dictionary<string, string> cachedData;
+        // key -> (ローカライズ文字列, SmartFormat を使う場合は True)
+        private Dictionary<string, (string, bool)> cachedData;
         [SerializeField] List<LocalizationTable> tables;
 
 #if ODIN_INSPECTOR
@@ -24,7 +25,7 @@
         public LocalizationLookUpTable()
         {
             tables = new List<LocalizationTable>();
-            cachedData = new Dictionary<string, string>();
+            cachedData = new Dictionary<string, (string, bool)>();
         }
 
         public void AddLocalizationTable(LocalizationTable newTable)
@@ -53,10 +54,14 @@
             if (!cachedData.ContainsKey(key))
             {
                 Debug.LogError("No key found: " + key);
-                return "no text";
             }
 #endif
-            return cachedData[key];
+            if (cachedData.TryGetValue(key, out var val))
+            {
+                return val.Item1;
+            }
+
+            return string.Empty;
         }
 
         /// <summary>
@@ -64,9 +69,9 @@
         /// </summary>
         public string Get(string key, string defaultVal)
         {
-            if (TryGetValue(key, out var value))
+            if (cachedData.TryGetValue(key, out var val))
             {
-                return value;
+                return val.Item1;
             }
 
             return defaultVal;
@@ -74,21 +79,47 @@
 
         public string Format(string key, params object[] args)
         {
-            return string.Format(cachedData[key], args);
+#if UNITY_EDITOR
+            if (!cachedData.ContainsKey(key))
+            {
+                Debug.LogError("No key found: " + key);
+            }
+#endif
+            
+            if (cachedData.TryGetValue(key, out var valAndSmart))
+            {
+                // Smart の場合.
+#if KU_SMART_FORMAT
+                if (valAndSmart.Item2)
+                {
+                    return UnityEngine.Localization.SmartFormat.Smart.Format(valAndSmart.Item1, args);
+                }
+#endif
+                return string.Format(valAndSmart.Item1, args);
+            }
+
+            return string.Empty;
         }
 
-        public bool TryGetValue(string key, out string value)
+        public bool TryGetValue(string key, out string strValue)
         {
-            return cachedData.TryGetValue(key, out value);
+            if (cachedData.TryGetValue(key, out var val))
+            {
+                strValue = val.Item1;
+                return true;
+            }
+
+            strValue = string.Empty;
+            return false;
         }
 
         public Sprite GetSprite(string key)
         {
             Sprite sprite = null;
 
-            if (cachedData.TryGetValue(key, out string value))
+            if (cachedData.TryGetValue(key, out var val))
             {
-                sprite = LoadSprite(value);
+                sprite = LoadSprite(val.Item1);
             }
 
             return sprite;
@@ -120,16 +151,17 @@
             {
                 return;
             }
-            
+
             foreach (LocalizationData data in table.rows)
             {
+                var val = (GetText(data, languageCode), data.smart);
                 if (cachedData.ContainsKey(data.key))
                 {
-                    cachedData[data.key] = GetText(data, languageCode);
+                    cachedData[data.key] = val;
                 }
                 else
                 {
-                    cachedData.Add(data.key, GetText(data, languageCode));
+                    cachedData.Add(data.key, val);
                 }
             }
         }
@@ -144,6 +176,8 @@
                     return data.en;
                 case "zh-cn":
                     return data.zh_cn;
+                case "zh-tw":
+                    return data.zh_tw;
                 default:
                     break;
             }
