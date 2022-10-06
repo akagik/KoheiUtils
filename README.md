@@ -15,12 +15,6 @@ Unity で言語ローカライズをするためのモジュール.
 - en
 - ja
 
-Format で SmarFormat を使う場合は下記シンボルをつけて、さらに Unity の Localization パッケージをインポートする.
-
-KU_SMART_FORMAT
-
-https://docs.unity3d.com/Packages/com.unity.localization@1.3/manual/Smart/SmartStrings.html
-
 ## Requirements
 - TMPro
 - Odin
