@@ -89,12 +89,10 @@
             if (cachedData.TryGetValue(key, out var valAndSmart))
             {
                 // Smart の場合.
-#if KU_SMART_FORMAT
                 if (valAndSmart.Item2)
                 {
-                    return UnityEngine.Localization.SmartFormat.Smart.Format(valAndSmart.Item1, args);
+                    return SmartFormat.Smart.Format(valAndSmart.Item1, args);
                 }
-#endif
                 return string.Format(valAndSmart.Item1, args);
             }
 
