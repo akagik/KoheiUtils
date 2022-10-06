@@ -1,6 +1,12 @@
 # Changelog
 All notable changes to this package will be documented in this file. The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
 
+## [0.3.6] - 2022-10-07
+
+- KU_SMART_FORMAT シンボルがある場合は SmartFormat を使えるようにした
+- 繁体字への対応
+- Get, Format で key がない場合、デフォルトで string.Empty を返すようにした
+
 ## [0.3.5] - 2022-08-16
 
 - [feat] ExecuteMethodAfterImort の引数として Table が渡るようにした
