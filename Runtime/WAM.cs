@@ -75,7 +75,7 @@
 
         public int SelectOne()
         {
-            float r = Random.Range(0f, 1f) * p.Length;
+            float r = Random.Range(0f, 0.99999f) * p.Length;
             int   i = (int) Math.Floor(r);
             r -= i;
 
