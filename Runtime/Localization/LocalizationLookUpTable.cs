@@ -172,6 +172,8 @@
                     return data.ja;
                 case "en":
                     return data.en;
+                case "ko":
+                    return data.ko;
                 case "zh-cn":
                     return data.zh_cn;
                 case "zh-tw":
