@@ -20,6 +20,7 @@ namespace KoheiUtils
         [SerializeField] private LocalizationLookUpTable _lookUpTable;
 
         public LocalizationLookUpTable lookUpTable => _lookUpTable;
+        public LocalizationTable[] Tables => tables;
 
         public string usingLangCode => lookUpTable.usingLangCode;
 
