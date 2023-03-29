@@ -223,6 +223,7 @@ namespace KoheiUtils
                 {
                     string value = Get(i, j);
                     value =  value.Replace("\"", "\"\"");
+                    value =  value.Replace("\r\n", "\n");
                     value =  value.Replace("\n", "\\n");
                     s     += "\"" + value + "\", ";
                 }
