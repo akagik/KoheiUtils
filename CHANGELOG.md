@@ -1,6 +1,10 @@
 # Changelog
 All notable changes to this package will be documented in this file. The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
 
+## [0.3.11] - 2023-3-29
+
+- [fix] CsvConverter で \r\n を含むテキストがあった場合にうまくデータをインポートできない問題を修正.
+
 ## [0.3.10] - 2022-11-30
 
 - [feat] LocalizationManager から各種テーブルへのアクセッサーを追加
