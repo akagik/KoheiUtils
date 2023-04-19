@@ -196,5 +196,36 @@ namespace KoheiUtils
 
             currentIndex = elements.Length - 1;
         }
+        
+        public T First<T>(Func<T, bool> cond) where T :PoolElement
+        {
+            for (int i = 0; i < elements.Length; i++)
+            {
+                var elem = elements[i];
+                if (elem.isRent)
+                {
+                    var elemT = elem.GetComponent<T>();
+                    if (cond(elemT))
+                    {
+                        return elemT;
+                    }
+                }
+            }
+
+            return null;
+        }
+        
+        public void ForEach<T>(Action<T> action) where T : PoolElement
+        {
+            for (int i = 0; i < elements.Length; i++)
+            {
+                var elem = elements[i];
+                if (elem.isRent)
+                {
+                    var elemT = elem.GetComponent<T>();
+                    action(elemT);
+                }
+            }
+        }
     }
 }
