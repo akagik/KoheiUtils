@@ -12,6 +12,7 @@ namespace KoheiUtils
     {
         [SerializeField] PoolElement template;
         [SerializeField] bool        setupOnAwake = true;
+        [SerializeField] bool        callUpdate = false;
         [SerializeField] int         poolSize     = 10;
 
         [SerializeField] bool inactiveOnReturn = true; // 返却時は gameObject を非アクティブ化するか？
@@ -224,6 +225,23 @@ namespace KoheiUtils
                 {
                     var elemT = elem.GetComponent<T>();
                     action(elemT);
+                }
+            }
+        }
+
+        void Update()
+        {
+            if (!callUpdate)
+            {
+                return;
+            }
+            
+            for (int i = 0; i < elements.Length; i++)
+            {
+                var elem = elements[i];
+                if (elem.isRent)
+                {
+                    elem.OnUpdate();
                 }
             }
         }

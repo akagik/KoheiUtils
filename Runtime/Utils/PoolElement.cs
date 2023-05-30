@@ -42,5 +42,9 @@
         protected virtual void ReturnInner()
         {
         }
+        
+        public virtual void OnUpdate()
+        {
+        }
     }
 }
