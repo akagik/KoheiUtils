@@ -51,6 +51,20 @@ namespace KoheiUtils
             }
         }
 
+        protected virtual PoolElement Instantiate(int i)
+        {
+            var element = Instantiate(template, transform);
+            element.Return();
+            element.gameObject.name = template.gameObject.name + " " + i;
+            element.Setup(OnElementReturn);
+            
+            if (inactiveOnReturn)
+            {
+                element.gameObject.SetActive(false);
+            }
+            return element;
+        }
+
         public void Setup()
         {
             _currentRentSize = 0;
@@ -59,15 +73,7 @@ namespace KoheiUtils
 
             for (int i = 0; i < elements.Length; i++)
             {
-                elements[i] = Instantiate(template, transform);
-                elements[i].Return();
-                elements[i].gameObject.name = template.gameObject.name + " " + i.ToString();
-                elements[i].Setup(OnElementReturn);
-
-                if (inactiveOnReturn)
-                {
-                    elements[i].gameObject.SetActive(false);
-                }
+                elements[i] = Instantiate(i);
             }
 
             if (inactiveOnReturn && template.gameObject.scene.IsValid())
@@ -157,15 +163,7 @@ namespace KoheiUtils
 
             for (int i = oldSize; i < elements.Length; i++)
             {
-                elements[i] = Instantiate(template, transform);
-                elements[i].Return();
-                elements[i].gameObject.name = template.gameObject.name + " " + i.ToString();
-                elements[i].Setup(OnElementReturn);
-
-                if (inactiveOnReturn)
-                {
-                    elements[i].gameObject.SetActive(false);
-                }
+                elements[i] = Instantiate(i);
             }
         }
 
