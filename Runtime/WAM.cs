@@ -81,5 +81,21 @@
 
             return r < p[i] ? i : a[i];
         }
+        
+        public int SelectOne(System.Random random)
+        {
+            if (random is not null)
+            {
+                float r = (float) random.NextDouble() * p.Length;
+                int   i = (int) Math.Floor(r);
+                r -= i;
+
+                return r < p[i] ? i : a[i];
+            }
+            else
+            {
+                return SelectOne();
+            }
+        }
     }
 }
