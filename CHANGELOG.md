@@ -1,6 +1,10 @@
 # Changelog
 All notable changes to this package will be documented in this file. The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
 
+## [0.3.15] - 2023-7-20
+
+- [feat] System.Random を使用した SelectOne メソッドを追加
+
 ## [0.3.14] - 2023-6-17
 
 - [feat] ObjectPool の Instantiate を virtual にした
