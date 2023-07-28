@@ -1,4 +1,6 @@
-﻿namespace KoheiUtils
+﻿using System.Collections.Generic;
+
+namespace KoheiUtils
 {
     using System;
     using System.Linq;
@@ -6,15 +8,18 @@
 
     public class WAM
     {
-        public float[] weights;
-        public float   wsm;
-        public float[] p;
-        public int[]   a;
+        readonly float[] weights;
+        readonly float[] p;
+        readonly int[]   a;
+        
+        float wsm;
 
-        public WAM(float[] weightArray)
+        public int Length => weights.Length;
+        public float TotalWight => wsm;
+
+        public WAM(IEnumerable<float> weightArray)
         {
-            weights = new float[weightArray.Length];
-            Array.Copy(weightArray, 0, weights, 0, weightArray.Length);
+            weights = weightArray.ToArray();
 
             p = new float[weights.Length];
             a = new int[weights.Length];
@@ -22,13 +27,11 @@
             Setup();
         }
 
-        private void Setup()
+        public void Setup()
         {
             int[] hl = new int[weights.Length];
             int   l  = 0;
             int   h  = weights.Length - 1;
-
-            a = new int[weights.Length];
 
             wsm = weights.Sum();
             Array.Clear(a, 0, weights.Length);
@@ -72,7 +75,22 @@
                 }
             }
         }
+        
+        public float GetWeight(int index)
+        {
+            return weights[index];
+        }
+        
+        public void SetWeight(int index, float weight, bool autoSetup = true)
+        {
+            weights[index] = weight;
 
+            if (autoSetup)
+            {
+                Setup();
+            }
+        }
+        
         public int SelectOne()
         {
             float r = Random.Range(0f, 0.99999f) * p.Length;
@@ -96,6 +114,16 @@
             {
                 return SelectOne();
             }
+        }
+
+        public float[] ToWeights()
+        {
+            return weights.ToArray();
+        }
+
+        public override string ToString()
+        {
+            return $"{nameof(weights)}: {weights.ToString<float>()}, total weights: {wsm}";
         }
     }
 }

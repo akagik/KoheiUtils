@@ -80,5 +80,69 @@ namespace KoheiUtils.Tests
                 }
             }
         }
+        
+        [Test]
+        public void Test_ChangeWAM()
+        {
+            WAM wam = new WAM(new float[] { 99f, 1f });
+
+            int[] counts = new int[2];
+            
+            for (int i = 0; i < 10000; i++)
+            {
+                int index = wam.SelectOne();
+                counts[index] += 1;
+            }
+            
+            Debug.Log("WAM=" + wam);
+            Debug.Log("結果(0): " + counts[0]);
+            Debug.Log("結果(1): " + counts[1]);
+            
+            wam.SetWeight(0, 5f);
+            wam.SetWeight(1, 95f);
+
+            counts = new int[2];
+            
+            for (int i = 0; i < 10000; i++)
+            {
+                int index = wam.SelectOne();
+                counts[index] += 1;
+            }
+            
+            Debug.Log("WAM=" + wam);
+            Debug.Log("結果(0): " + counts[0]);
+            Debug.Log("結果(1): " + counts[1]);
+            
+            wam.SetWeight(0, 0f, autoSetup: false);
+            wam.SetWeight(1, 95f, autoSetup: false);
+            wam.Setup();
+
+            counts = new int[2];
+            
+            for (int i = 0; i < 1000000; i++)
+            {
+                int index = wam.SelectOne();
+                counts[index] += 1;
+            }
+            
+            Debug.Log("WAM=" + wam);
+            Debug.Log("結果(0): " + counts[0]);
+            Debug.Log("結果(1): " + counts[1]);
+            
+            wam.SetWeight(0, 99.9f);
+            wam.SetWeight(1, 0.1f);
+
+            counts = new int[2];
+            
+            for (int i = 0; i < 1000000; i++)
+            {
+                int index = wam.SelectOne();
+                counts[index] += 1;
+            }
+            
+            Debug.Log("WAM=" + wam);
+            Debug.Log("結果(0): " + counts[0]);
+            Debug.Log("結果(1): " + counts[1]);
+        }
     }
 }
