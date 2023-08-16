@@ -522,7 +522,7 @@ namespace KoheiUtils
 
             if (toolbarSearchField == null)
             {
-                toolbarSearchField = GetStyle("ToolbarSeachTextField");
+                toolbarSearchField = GetStyle("ToolbarSearchTextField");
             }
 
             text = EditorGUI.TextField(position, text, toolbarSearchField);
@@ -530,7 +530,7 @@ namespace KoheiUtils
             {
                 if (toolbarSearchFieldCancelButtonEmpty == null)
                 {
-                    toolbarSearchFieldCancelButtonEmpty = GetStyle("ToolbarSeachCancelButtonEmpty");
+                    toolbarSearchFieldCancelButtonEmpty = GetStyle("ToolbarSearchCancelButtonEmpty");
                 }
 
                 GUI.Button(rect, GUIContent.none, toolbarSearchFieldCancelButtonEmpty);
@@ -539,7 +539,7 @@ namespace KoheiUtils
             {
                 if (toolbarSearchFieldCancelButton == null)
                 {
-                    toolbarSearchFieldCancelButton = GetStyle("ToolbarSeachCancelButton");
+                    toolbarSearchFieldCancelButton = GetStyle("ToolbarSearchCancelButton");
                 }
 
                 if (GUI.Button(rect, GUIContent.none, toolbarSearchFieldCancelButton))
