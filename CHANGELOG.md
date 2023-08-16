@@ -1,6 +1,10 @@
 # Changelog
 All notable changes to this package will be documented in this file. The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
 
+## [0.3.17] - 2023-8-17
+
+- [fix] unity 2022 で CsvConverter でエラーが出る問題を修正
+
 ## [0.3.16] - 2023-7-28
 
 - [feat] WAM の weights を生成後に更新・取得できるようにした
