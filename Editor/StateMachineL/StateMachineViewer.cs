@@ -28,13 +28,18 @@
             GetWindow<StateMachineViewer>("StateMachine Viewer").Show();
         }
 
+#if ODIN_INSPECTOR
+        protected override void OnImGUI()
+        {
+            Render();
+            base.OnImGUI();
+        }
+#else
         void OnGUI()
         {
             Render();
-#if ODIN_INSPECTOR
-            base.OnGUI();
-#endif
         }
+#endif
 
         private void Render()
         {
