@@ -104,7 +104,7 @@ namespace KoheiUtils
         {
             if (random is not null)
             {
-                float r = (float) random.NextDouble() * p.Length;
+                double r = random.NextDouble() * p.Length;
                 int   i = (int) Math.Floor(r);
                 r -= i;
 
