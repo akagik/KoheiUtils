@@ -522,7 +522,11 @@ namespace KoheiUtils
 
             if (toolbarSearchField == null)
             {
+#if UNITY_2022_1_OR_NEWER
                 toolbarSearchField = GetStyle("ToolbarSearchTextField");
+#else
+                toolbarSearchField = GetStyle("ToolbarSeachTextField");
+#endif
             }
 
             text = EditorGUI.TextField(position, text, toolbarSearchField);
@@ -530,7 +534,11 @@ namespace KoheiUtils
             {
                 if (toolbarSearchFieldCancelButtonEmpty == null)
                 {
+#if UNITY_2022_1_OR_NEWER
                     toolbarSearchFieldCancelButtonEmpty = GetStyle("ToolbarSearchCancelButtonEmpty");
+#else
+                    toolbarSearchFieldCancelButtonEmpty = GetStyle("ToolbarSeachCancelButtonEmpty");
+#endif
                 }
 
                 GUI.Button(rect, GUIContent.none, toolbarSearchFieldCancelButtonEmpty);
@@ -539,7 +547,11 @@ namespace KoheiUtils
             {
                 if (toolbarSearchFieldCancelButton == null)
                 {
+#if UNITY_2022_1_OR_NEWER
                     toolbarSearchFieldCancelButton = GetStyle("ToolbarSearchCancelButton");
+#else
+                    toolbarSearchFieldCancelButton = GetStyle("ToolbarSeachCancelButton");
+#endif
                 }
 
                 if (GUI.Button(rect, GUIContent.none, toolbarSearchFieldCancelButton))
