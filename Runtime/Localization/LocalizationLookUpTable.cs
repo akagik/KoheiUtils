@@ -21,6 +21,8 @@
         private string _usingLanguage = "";
 
         public string usingLangCode => _usingLanguage;
+        
+        public Dictionary<string, (string, bool)>.KeyCollection Keys => cachedData.Keys;
 
         public LocalizationLookUpTable()
         {

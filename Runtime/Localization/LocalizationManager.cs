@@ -1,3 +1,5 @@
+using System.Collections.Generic;
+
 namespace KoheiUtils
 {
     using UnityEngine;
@@ -23,6 +25,8 @@ namespace KoheiUtils
         public LocalizationTable[] Tables => tables;
 
         public string usingLangCode => lookUpTable.usingLangCode;
+        
+        public Dictionary<string, (string, bool)>.KeyCollection Keys => _lookUpTable.Keys;
 
         private new void Awake()
         {
