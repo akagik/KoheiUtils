@@ -29,11 +29,19 @@
         }
 
 #if ODIN_INSPECTOR
+#if UNITY_2022_1_OR_NEWER
         protected override void OnImGUI()
         {
             Render();
             base.OnImGUI();
         }
+#else
+        protected override void OnGUI()
+        {
+            Render();
+            base.OnGUI();
+        }
+#endif
 #else
         void OnGUI()
         {
