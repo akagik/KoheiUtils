@@ -6,6 +6,7 @@
     [CreateAssetMenu(menuName = "KoheiUtils/LocalizationTable")]
     public class LocalizationTable : ScriptableObject
     {
+        public string key;
         public List<LocalizationData> rows;
     }
 }

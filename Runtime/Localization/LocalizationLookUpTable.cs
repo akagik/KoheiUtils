@@ -32,6 +32,25 @@
 
         public void AddLocalizationTable(LocalizationTable newTable)
         {
+            if (!string.IsNullOrEmpty(newTable.key))
+            {
+                int overwriteIndex = -1;
+                for (var i = 0; i < tables.Count; i++)
+                {
+                    var table = tables[i];
+                    if (table.key == newTable.key)
+                    {
+                        overwriteIndex = i;
+                        break;
+                    }
+                }
+
+                if (overwriteIndex >= 0)
+                {
+                    tables.RemoveAt(overwriteIndex);
+                }
+            }
+
             tables.Add(newTable);
             MakeCache(usingLangCode, newTable);
         }
