@@ -273,6 +273,37 @@ namespace KoheiUtils
                 }
             }
 
+            // version チェック
+            if (!string.IsNullOrWhiteSpace(gSettings.versionFieldName))
+            {
+                for (int j = 0; j < content.col; j++)
+                {
+                    if (fields[j].isVersion)
+                    {
+                        string sValue = content.Get(i, j);
+
+                        if (!string.IsNullOrWhiteSpace(sValue))
+                        {
+                            sValue = "\"" + sValue + "\"";
+                            string value = (string) Str2TypeConverter.Convert(typeof(string), sValue);
+
+                            if (!Version.TryParse(value, out Version version))
+                            {
+                                Debug.LogErrorFormat("{0}行{1}列目: 不正なバージョン文字列: \"{2}\"", line, j + 1, value);
+                                return ResultType.ConvertFails;
+                            }
+                            Version appVersion = new Version(Application.version);
+
+                            if (version.CompareTo(appVersion) > 0)
+                            {
+                                return ResultType.VersionMismatch;
+                            }
+                        }
+                        break;
+                    }
+                }
+            }
+
             // 各列に対して、有効なフィールドのみ値を読み込んで実際のデータに変換し、この行のインスタンス data に代入する.
             for (int j = 0; j < content.col; j++)
             {
@@ -358,17 +389,6 @@ namespace KoheiUtils
                     value = objects.GetType().GetMethod("ToArray").Invoke(objects, new object[] { });
                 }
                 
-                if (gSettings.versionFieldName == info.Name && value is string valStr && !string.IsNullOrWhiteSpace(valStr))
-                {
-                    Version version = new Version(valStr);
-                    Version appVersion = new Version(Application.version);
-
-                    if (version.CompareTo(appVersion) > 0)
-                    {
-                        return ResultType.VersionMismatch;
-                    }
-                }
-
                 info.SetValue(data, value);
             }
 

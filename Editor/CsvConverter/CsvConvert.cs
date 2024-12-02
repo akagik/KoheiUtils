@@ -152,7 +152,7 @@ namespace KoheiUtils
             // class のフィールド名と一致しないものは除外する.
             for (int j = 0; j < fields.Length; j++)
             {
-                if (!fields[j].isValid)
+                if (!fields[j].isValid || fields[j].isVersion)
                 {
                     continue;
                 }

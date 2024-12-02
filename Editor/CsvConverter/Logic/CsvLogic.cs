@@ -89,13 +89,22 @@ namespace KoheiUtils
 
                 string typeName = typeHeaders.Get(0, col).Trim();
 
-                if (typeName == string.Empty)
+                if (gSettings.versionFieldName == fields[col].fieldName)
                 {
+                    fields[col].isVersion = true;
                     fields[col].isValid = false;
-                    continue;
+                    fields[col].typeName = string.Empty;
                 }
+                else
+                {
+                    if (typeName == string.Empty)
+                    {
+                        fields[col].isValid = false;
+                        continue;
+                    }
 
-                fields[col].typeName = typeName;
+                    fields[col].typeName = typeName;
+                }
             }
 
             return fields;

@@ -12,6 +12,7 @@ namespace KoheiUtils
         public string fieldName = "";
         public string typeName = "";
         public bool isValid = true;
+        public bool isVersion = false;
 
         public string fieldNameWithoutIndexing
         {
