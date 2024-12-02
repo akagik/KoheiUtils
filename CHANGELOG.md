@@ -1,6 +1,11 @@
 # Changelog
 All notable changes to this package will be documented in this file. The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
 
+## [0.3.20] - 2024-12-02
+
+- [feat] CsvConverter にバージョンの概念を導入
+- [feat] CsvConverter で Enum のパースに失敗したときのエラーを表示するようにした.
+
 ## [0.3.19] - 2024-5-31
 
 - [remove] remove state machine
