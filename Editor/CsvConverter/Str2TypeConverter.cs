@@ -211,7 +211,7 @@
             else if (t.IsEnum)
             {
                 Type fieldType = t;
-                value = Enum.Parse(fieldType, sValue);
+                Enum.TryParse(fieldType, sValue, out value);
             }
             else
             {
