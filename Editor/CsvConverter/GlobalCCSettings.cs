@@ -46,6 +46,8 @@ namespace KoheiUtils
         /// 例えば, これを 2 に設定していると index 0, 1 の列は無視される.
         /// </summary>
         public int columnIndexOfTableStart = 0;
+        
+        public string versionFieldName = "version";
 
         /// <summary>
         /// テーブルの終わりを示す EDN マーカー機能を有効にするかを指定する.

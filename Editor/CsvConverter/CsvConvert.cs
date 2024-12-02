@@ -221,6 +221,10 @@ namespace KoheiUtils
                 {
                     Debug.LogErrorFormat("{0} line {1}: Join Target のテーブル class に指定された Find メソッドが存在しません: {2}", s.className, line, s.targetFindMethodName);
                 }
+                if ((resultType & ResultType.VersionMismatch & gSettings.logType) != 0)
+                {
+                    Debug.LogWarningFormat("{0} line {1}: version のミスマッチ行をスキップ.", s.className, line);
+                }
 
                 int total = assetsGenerator.contentRowCount;
                 if (total <= 10 || i == total - 1 || i % (total / 10) == 0)

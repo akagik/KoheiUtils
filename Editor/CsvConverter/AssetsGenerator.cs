@@ -205,8 +205,9 @@ namespace KoheiUtils
             JoinIndexMismatch = 1 << 3,
             JoinNoReferenceRow = 1 << 4,
             JoinNoFindMethod = 1 << 5,
+            VersionMismatch = 1 << 6,
             
-            All = SkipNoKey | EmptyCell | ConvertFails | JoinIndexMismatch | JoinNoReferenceRow | JoinNoFindMethod
+            All = SkipNoKey | EmptyCell | ConvertFails | JoinIndexMismatch | JoinNoReferenceRow | JoinNoFindMethod | VersionMismatch
         }
 
         public ResultType CreateCsvAssetAt(int i, GlobalCCSettings gSettings)
@@ -355,6 +356,17 @@ namespace KoheiUtils
 
                     objects.GetType().GetMethod("Add").Invoke(objects, new object[] {value});
                     value = objects.GetType().GetMethod("ToArray").Invoke(objects, new object[] { });
+                }
+                
+                if (gSettings.versionFieldName == info.Name && value is string valStr && !string.IsNullOrWhiteSpace(valStr))
+                {
+                    Version version = new Version(valStr);
+                    Version appVersion = new Version(Application.version);
+
+                    if (version.CompareTo(appVersion) > 0)
+                    {
+                        return ResultType.VersionMismatch;
+                    }
                 }
 
                 info.SetValue(data, value);
