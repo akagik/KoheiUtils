@@ -1,6 +1,10 @@
 # Changelog
 All notable changes to this package will be documented in this file. The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
 
+## [0.3.21] - 2024-12-03
+
+- [feat] version 列は class に定義しなくても処理されるようにした
+
 ## [0.3.20] - 2024-12-02
 
 - [feat] CsvConverter にバージョンの概念を導入
