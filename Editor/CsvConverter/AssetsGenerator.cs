@@ -14,6 +14,7 @@ namespace KoheiUtils
     {
         private ConvertSetting setting;
         private Type[] customAssetTypes;
+        private HashSet<Type> customAssetTypeSet;
 
         private Field[] fields;
         private CsvData content;
@@ -55,6 +56,7 @@ namespace KoheiUtils
         public void SetCustomAssetTypes(Type[] _customAssetTypes)
         {
             customAssetTypes = _customAssetTypes;
+            customAssetTypeSet = new HashSet<Type>(_customAssetTypes);
         }
 
         public void Setup(Type _assetType, string settingPath)
@@ -252,7 +254,7 @@ namespace KoheiUtils
             {
                 if (!fields[j].isValid) continue;
 
-                FieldInfo info = assetType.GetField(fields[j].fieldNameWithoutIndexing);
+                FieldInfo info = CsvReflectionCache.GetFieldInfo(assetType, fields[j].fieldNameWithoutIndexing);
 
                 // フィールド名が配列要素の場合は配列のデータをセットしておく.
                 if (fields[j].isArrayField)
@@ -309,7 +311,7 @@ namespace KoheiUtils
             {
                 if (!fields[j].isValid) continue;
 
-                FieldInfo info = assetType.GetField(fields[j].fieldNameWithoutIndexing);
+                FieldInfo info = CsvReflectionCache.GetFieldInfo(assetType, fields[j].fieldNameWithoutIndexing);
                 Type fieldType = fields[j].GetTypeAs(info);
 
                 // (i, j) セルに格納されている生のテキストデータを fieldType 型に変換する.
@@ -336,20 +338,9 @@ namespace KoheiUtils
                         value = Str2TypeConverter.Convert(fieldType, sValue);
 
                         // 基本型で変換できないときは GlobalSettings の customAssetTypes で変換を試みる.
-                        if (value == null)
+                        if (value == null && customAssetTypeSet != null && customAssetTypeSet.Contains(fieldType))
                         {
-                            foreach (var type in customAssetTypes)
-                            {
-                                if (fieldType == type)
-                                {
-                                    value = Str2TypeConverter.LoadAsset(sValue, type);
-
-                                    if (value != null)
-                                    {
-                                        break;
-                                    }
-                                }
-                            }
+                            value = Str2TypeConverter.LoadAsset(sValue, fieldType);
                         }
 
                         if (value == null)

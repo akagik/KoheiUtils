@@ -90,31 +90,8 @@
         /// </summary>
         public static List<Type> GetTypeByName(string name, bool fullyQualifiedName = false)
         {
-            List<Type> candidates = new List<Type>();
-
-            Func<Type, bool> checkFunc;
-
-            if (fullyQualifiedName)
-            {
-                checkFunc = (type) => type.ToString() == name;
-            }
-            else
-            {
-                checkFunc = (type) => type.Name == name;
-            }
-
-            foreach (Assembly assembly in AppDomain.CurrentDomain.GetAssemblies())
-            {
-                foreach (Type type in assembly.GetTypes())
-                {
-                    if (checkFunc(type))
-                    {
-                        candidates.Add(type);
-                    }
-                }
-            }
-
-            return candidates;
+            // CsvReflectionCacheを使用して高速化
+            return CsvReflectionCache.GetTypeByName(name, fullyQualifiedName);
         }
     }
 }
