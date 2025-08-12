@@ -80,7 +80,7 @@ namespace KoheiUtils
             // しかし、浮動小数点の誤差により p[k] += p[j] - 1 の計算結果で1にならない場合があり
             // その結果、低確率ながらインデックス0が抽選される問題の対応
             // インデックス0のweight値が0の場合のみpの値補正を行う
-            if (weights[0] == 0)
+            if (weights.Length > 0 && weights[0] == 0)
             {
                 for (int i = 0; i < a.Length; i++)
                 {

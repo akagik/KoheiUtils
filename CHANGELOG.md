@@ -1,6 +1,10 @@
 # Changelog
 All notable changes to this package will be documented in this file. The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
 
+## [0.3.24] - 2025-08-12
+
+- [fix] WAM の weights 要素数が０の時に例外が出る問題を修正
+
 ## [0.3.23] - 2025-08-12
 
 - [fix] WAM の浮動小数点誤差により weight 値が０でも抽選される問題を修正
