@@ -1,6 +1,10 @@
 # Changelog
 All notable changes to this package will be documented in this file. The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
 
+## [0.3.23] - 2025-08-12
+
+- [fix] WAM の浮動小数点誤差により weight 値が０でも抽選される問題を修正
+
 ## [0.3.22] - 2025-01-08
 
 - [feat] CsvConverter のパフォーマンスを大幅に改善
