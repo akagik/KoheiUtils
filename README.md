@@ -8,6 +8,9 @@ This package is various utilities for unity.
 - GSPlugin
 - その他 Unity のユーティリティ
 
+CsvConverter なし版
+https://github.com/akagik/KoheiUtils.git#no-csvconverter
+
 ## Localization
 
 Unity で言語ローカライズをするためのモジュール.
