@@ -199,6 +199,10 @@
                     return data.zh_cn;
                 case "zh-tw":
                     return data.zh_tw;
+                case "th":
+                    return data.th;
+                case "vi":
+                    return data.vi;
                 default:
                     break;
             }
