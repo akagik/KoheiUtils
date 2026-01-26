@@ -15,5 +15,6 @@
         public string ko;
         public string zh_cn; // 中国語（簡体字）
         public string zh_tw; // 中国語（繁体字）
-    }
+        public string th; // タイ
+        public string vi; // ベトナム
 }
