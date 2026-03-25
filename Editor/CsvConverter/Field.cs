@@ -6,7 +6,7 @@ using UnityEngine;
 
 namespace KoheiUtils
 {
-    [SerializeField]
+    [Serializable]
     public class Field
     {
         public string fieldName = "";
