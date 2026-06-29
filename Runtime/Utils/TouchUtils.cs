@@ -2,13 +2,29 @@ namespace KoheiUtils
 {
     using UnityEngine;
 
+    public interface ITouchProvider
+    {
+        int touchCount { get; }
+        Vector3 mousePosition { get; }
+        bool GetMouseButton(int button);
+        bool GetMouseButtonDown(int button);
+        bool GetMouseButtonUp(int button);
+        Touch GetTouch(int index);
+    }
 
     public static class TouchUtils
     {
+        public static ITouchProvider OverrideProvider { get; set; }
+
         public static int touchCount
         {
             get
             {
+                if (OverrideProvider != null)
+                {
+                    return OverrideProvider.touchCount;
+                }
+
 #if UNITY_EDITOR || UNITY_STANDALONE || UNITY_WEBGL
                 if (Input.GetMouseButtonDown(0)) return 1;
                 if (Input.GetMouseButton(0)) return 1;
@@ -30,9 +46,14 @@ namespace KoheiUtils
 
         public static Touch GetTouch(int index)
         {
+            if (OverrideProvider != null)
+            {
+                return OverrideProvider.GetTouch(index);
+            }
+
 #if UNITY_EDITOR || UNITY_STANDALONE || UNITY_WEBGL
             Touch touch = new Touch();
-            touch.position = Input.mousePosition;
+            touch.position = GetMousePosition();
 
             if (updateFrameCount != Time.frameCount)
             {
@@ -58,6 +79,46 @@ namespace KoheiUtils
 #else
             return Input.GetTouch(index);
 #endif
+        }
+
+        public static Vector3 GetMousePosition()
+        {
+            if (OverrideProvider != null)
+            {
+                return OverrideProvider.mousePosition;
+            }
+
+            return Input.mousePosition;
+        }
+
+        public static bool GetMouseButton(int button)
+        {
+            if (OverrideProvider != null)
+            {
+                return OverrideProvider.GetMouseButton(button);
+            }
+
+            return Input.GetMouseButton(button);
+        }
+
+        public static bool GetMouseButtonDown(int button)
+        {
+            if (OverrideProvider != null)
+            {
+                return OverrideProvider.GetMouseButtonDown(button);
+            }
+
+            return Input.GetMouseButtonDown(button);
+        }
+
+        public static bool GetMouseButtonUp(int button)
+        {
+            if (OverrideProvider != null)
+            {
+                return OverrideProvider.GetMouseButtonUp(button);
+            }
+
+            return Input.GetMouseButtonUp(button);
         }
     }
 }
